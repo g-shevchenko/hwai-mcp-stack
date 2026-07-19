@@ -46,3 +46,12 @@ docs/humanswithai-mcp-stack.md
 # Python
 __pycache__/
 *.pyc
+
+# Scraper stack — приватный, в публичный репозиторий не попадает никогда.
+# Каталоги существуют локально (агенты собирают из них dist), но НЕ отслеживаются.
+# Без этих строк `git add -A` утащил бы весь стек в публичный доступ.
+# Канон: .claude/rules/mcp-stack-moat-guard.md в приватном монорепо.
+mcp/source/services/scraper-mcp/
+mcp/source/services/searxng-mcp/
+mcp/source/services/crawl4ai-mcp/
+mcp/source/services/reader-mcp/
