@@ -119,35 +119,3 @@ export async function optimizeForVLM(
     processingTimeMs,
   };
 }
-
-/**
- * Quick optimization with default settings
- * For screenshots going to VLM
- */
-export async function optimizeScreenshot(imageBuffer: Buffer): Promise<Buffer> {
-  const result = await optimizeForVLM(imageBuffer, {
-    maxWidth: 1200,
-    maxHeight: 800,
-    quality: 85,
-    format: 'jpeg',
-  });
-
-  console.error(
-    `[ImageOptimizer] ${result.originalSize} → ${result.optimizedSize} bytes ` +
-    `(${(result.compressionRatio * 100).toFixed(1)}% saved, ` +
-    `${result.processingTimeMs}ms)`
-  );
-
-  // Return as plain Buffer to avoid type issues
-  return Buffer.from(result.buffer);
-}
-
-/**
- * Check if image needs optimization
- */
-export function shouldOptimize(
-  sizeBytes: number,
-  maxSizeBytes: number = 500 * 1024 // 500KB
-): boolean {
-  return sizeBytes > maxSizeBytes;
-}

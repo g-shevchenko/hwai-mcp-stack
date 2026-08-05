@@ -31,3 +31,16 @@ test("clean referenced code yields no findings (false-positive floor)", () => {
   const findings = analyzeSource(lib, "lib.ts", { allSources: [lib, caller] });
   assert.equal(findings.length, 0, `expected 0 findings, got ${JSON.stringify(findings)}`);
 });
+
+test("CD03 does NOT flag TS types/interfaces (compile-time, no runtime refs)", () => {
+  // Types are compile-time only; a text-grep for runtime refs always misses them.
+  // Flagging them is the Category-D false positive found in dogfooding.
+  const src = [
+    `export interface OptimizeOptions { width?: number; }`,
+    `export type OptimizationResult = { ok: boolean };`,
+    `export interface TraceMetadata { id: string };`,
+  ].join("\n");
+  const findings = analyzeSource(src, "types.ts", { allSources: [src] });
+  const cd03 = findings.filter((f) => f.id === "CD03");
+  assert.equal(cd03.length, 0, `expected 0 CD03 on type-only exports, got ${JSON.stringify(cd03)}`);
+});

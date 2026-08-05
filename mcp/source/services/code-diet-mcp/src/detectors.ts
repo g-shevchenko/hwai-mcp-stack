@@ -89,9 +89,12 @@ function extractBracedBody(text: string, openIndex: number): string | null {
 
 function exportedNames(text: string): string[] {
   const names = new Set<string>();
-  const decl = /\bexport\s+(?:default\s+)?(?:async\s+)?(?:function|class|const|let|var|interface|type|enum)\s+([A-Za-z_$][\w$]*)/g;
+  // CD03 measures RUNTIME references. TS type-only exports (interface / type) have no
+  // runtime refs, so a text-grep always misses them -> false positive (dogfood Category D).
+  // Only value exports (function/class/const/let/var/enum) are checked for dead refs.
+  const decl = /\bexport\s+(?:default\s+)?(?:async\s+)?(function|class|const|let|var|enum)\s+([A-Za-z_$][\w$]*)/g;
   let m: RegExpExecArray | null;
-  while ((m = decl.exec(text))) names.add(m[1]);
+  while ((m = decl.exec(text))) names.add(m[2]);
   return [...names];
 }
 

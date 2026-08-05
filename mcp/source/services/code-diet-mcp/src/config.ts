@@ -1,9 +1,5 @@
 import path from "node:path";
 
-export const CODE_DIET_SCHEMA_VERSION = "code-diet.v0.1";
-export const CODE_DIET_MEASUREMENT_SCHEMA_VERSION = "code-diet-measurement.v0.1";
-export const CODE_DIET_PIPELINE_VERSION = "2026-08-05.local-code-diet-v0.1.0";
-
 export interface CodeDietConfig {
   artifactDir: string;
   cacheDir: string;

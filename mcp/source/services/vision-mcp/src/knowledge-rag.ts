@@ -1,6 +1,12 @@
 /**
  * RAG (Retrieval Augmented Generation) for screenshot task analysis
  * Searches KNOWLEDGE_BASE.md for relevant gotchas and context
+ *
+ * TODO(unwired-feature): declared at initial public release (6807966) but NEVER
+ * imported by index.ts across the entire git history. This is an INTENDED feature
+ * (RAG-enrich screenshot analysis with KB gotchas), not dead code. Decide: wire into
+ * the analysis pipeline (index.ts) as a feature task, or remove. Tracked separately
+ * from code-diet dead-code cleanup — do NOT delete as part of CD03 findings.
  */
 
 import * as fs from "fs";
