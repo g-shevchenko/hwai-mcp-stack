@@ -47,14 +47,17 @@ export function detectReExportPlumbing(text: string): Finding[] {
 }
 
 // CD02 — guard-clause / fallback spam: a function body packed with defensive early returns.
+// Window = one function body (to the closing brace at the same indent), not a fixed char
+// slice — a fixed window leaks guards from sibling functions and flags parsers as spam.
 export function detectGuardSpam(text: string, min: number): Finding[] {
   const findings: Finding[] = [];
-  const fnStart = /(?:export\s+)?(?:async\s+)?function\s+[A-Za-z_$]|[=:(]\s*(?:async\s*)?\([^)]*\)\s*=>/g;
+  const fnStart = /(?:export\s+)?(?:async\s+)?function\s+[A-Za-z_$][\w$]*\s*\([^)]*\)\s*(?::\s*[^{]+)?\s*\{/g;
   let m: RegExpExecArray | null;
   while ((m = fnStart.exec(text))) {
-    // crude body window: next 1200 chars from the match
-    const window = text.slice(m.index, m.index + 1200);
-    const guards = (window.match(/if\s*\([^)]*\)\s*(?:return|throw)\b/g) || []).length;
+    const bodyStart = m.index + m[0].length - 1; // at the opening brace
+    const body = extractBracedBody(text, bodyStart);
+    if (!body) continue;
+    const guards = (body.match(/if\s*\([^)]*\)\s*(?:return|throw)\b/g) || []).length;
     if (guards >= min) {
       findings.push({
         id: "CD02",
@@ -66,6 +69,22 @@ export function detectGuardSpam(text: string, min: number): Finding[] {
     }
   }
   return findings;
+}
+
+// Return the text inside the braces starting at `openIndex` (which must be '{').
+// Balanced-brace scan; returns null if unbalanced.
+function extractBracedBody(text: string, openIndex: number): string | null {
+  if (text[openIndex] !== "{") return null;
+  let depth = 0;
+  for (let i = openIndex; i < text.length; i++) {
+    const ch = text[i];
+    if (ch === "{") depth++;
+    else if (ch === "}") {
+      depth--;
+      if (depth === 0) return text.slice(openIndex + 1, i);
+    }
+  }
+  return null;
 }
 
 function exportedNames(text: string): string[] {

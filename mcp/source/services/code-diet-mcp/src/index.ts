@@ -138,7 +138,7 @@ function runDetect(args: Record<string, unknown>) {
   const root = typeof args.repo_root === "string" ? args.repo_root : process.cwd();
   const maxFiles = typeof args.max_files === "number" ? args.max_files : config.maxFiles;
   const maxBytes = config.maxFileBytes;
-  const scope = Array.isArray(args.paths) && args.paths.length ? args.paths.map((p) => join(root, String(p))) : [join(root, "src")];
+  const scope = Array.isArray(args.paths) && args.paths.length ? args.paths.map((p) => join(root, String(p))) : [root];
   let files: { path: string; text: string }[] = [];
   for (const p of scope) {
     try {
