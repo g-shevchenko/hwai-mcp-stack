@@ -130,6 +130,13 @@
       "cache_dir": "$HOME/.hwai/repo-hygiene-mcp",
       "category": "local-utility"
     },
+    "code-diet-mcp": {
+      "client_name": "code_diet",
+      "service_dir": "services/code-diet-mcp",
+      "stdio": "services/code-diet-mcp/scripts/local-stdio.sh",
+      "cache_dir": "$HOME/.hwai/code-diet-mcp",
+      "category": "local-utility"
+    },
     "docs-hygiene-mcp": {
       "client_name": "docs_hygiene",
       "service_dir": "services/docs-hygiene-mcp",
