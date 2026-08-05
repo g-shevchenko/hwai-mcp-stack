@@ -44,3 +44,53 @@ test("CD03 does NOT flag TS types/interfaces (compile-time, no runtime refs)", (
   const cd03 = findings.filter((f) => f.id === "CD03");
   assert.equal(cd03.length, 0, `expected 0 CD03 on type-only exports, got ${JSON.stringify(cd03)}`);
 });
+
+test("CD01 abstraction bloat: interface with exactly 1 impl and no polymorphic use is flagged", () => {
+  const src = [
+    `export interface Shape { area(): number }`,
+    `class Square implements Shape { area() { return 1; } }`,
+    `const s = new Square(); s.area();`,
+  ].join("\n");
+  const findings = analyzeSource(src, "s.ts", { allSources: [src] });
+  assert.ok(findings.some((f) => f.id === "CD01"), "expected a CD01 single-impl-interface finding");
+});
+
+test("CD01 clean: interface with 2+ implementations is NOT flagged", () => {
+  const src = [
+    `interface Shape { area(): number }`,
+    `class Square implements Shape { area() { return 1; } }`,
+    `class Circle implements Shape { area() { return 2; } }`,
+    `function render(x: Shape) { return x.area(); }`,
+  ].join("\n");
+  const findings = analyzeSource(src, "s.ts", { allSources: [src] });
+  assert.ok(!findings.some((f) => f.id === "CD01"), "expected no CD01 for polymorphic interface");
+});
+
+test("CD05 reinvention: helper duplicating stdlib padStart is flagged", () => {
+  const src = [
+    `export function leftPad(s: string, n: number, ch: string): string {`,
+    `  let out = s; while (out.length < n) out = ch + out; return out;`,
+    `}`,
+    `const x = leftPad("5", 3, "0");`,
+  ].join("\n");
+  const findings = analyzeSource(src, "p.ts", { allSources: [src] });
+  assert.ok(findings.some((f) => f.id === "CD05"), "expected a CD05 left-pad reinvention finding");
+});
+
+test("CD06 dead code: never-true condition is flagged", () => {
+  const src = [
+    `function f(x: number): number {`,
+    `  if (x !== x) return -1;`,
+    `  return x;`,
+    `}`,
+    `f(1);`,
+  ].join("\n");
+  const findings = analyzeSource(src, "d.ts", { allSources: [src] });
+  assert.ok(findings.some((f) => f.id === "CD06"), "expected a CD06 never-true-condition finding");
+});
+
+test("CD06 dead code: if (false) constant branch is flagged", () => {
+  const src = `function g() {\n  if (false) { doThing(); }\n  return 1;\n}\ng();`;
+  const findings = analyzeSource(src, "d.ts", { allSources: [src] });
+  assert.ok(findings.some((f) => f.id === "CD06"), "expected a CD06 if(false) finding");
+});

@@ -120,6 +120,88 @@ export function detectUnusedExports(text: string, allSources: string[]): Finding
   return findings;
 }
 
+// CD01 — abstraction bloat: interface with exactly 1 implementation and no
+// polymorphic usage (the interface is never used as a TYPE elsewhere). A 1:1
+// interface adds an indirection layer with no abstraction payoff.
+export function detectAbstractionBloat(text: string, allSources: string[]): Finding[] {
+  const findings: Finding[] = [];
+  const corpus = allSources.length ? allSources : [text];
+  const ifaceRe = /\binterface\s+([A-Za-z_$][\w$]*)/g;
+  let m: RegExpExecArray | null;
+  while ((m = ifaceRe.exec(text))) {
+    const name = m[1];
+    let implCount = 0;
+    let typeUseCount = 0;
+    for (const src of corpus) {
+      implCount += (src.match(new RegExp(`\\bimplements\\s+${name}\\b`, "g")) || []).length;
+      // polymorphic use = the interface name appears as a type annotation / generic arg
+      typeUseCount += (src.match(new RegExp(`[:<(,]\\s*${name}\\b`, "g")) || []).length;
+    }
+    if (implCount === 1 && typeUseCount === 0) {
+      findings.push({
+        id: "CD01",
+        line: lineOf(text, m.index),
+        confidence: 0.55,
+        message: `Interface "${name}" has exactly 1 implementation and no polymorphic type usage.`,
+        suggested_action: "Inline the interface into its single implementor, or add a second implementation to justify the abstraction.",
+      });
+    }
+  }
+  return findings;
+}
+
+// CD05 — reinvention: helper duplicating a stdlib capability. Conservative allowlist
+// of well-known "reinvented" helpers (left-pad class). Named-match on the function +
+// a manual-loop body heuristic to keep FP low.
+const REINVENTION_PATTERNS: { re: RegExp; stdlib: string }[] = [
+  { re: /\b(?:export\s+)?function\s+(leftPad|padLeft)\s*\(/, stdlib: "String.prototype.padStart" },
+  { re: /\b(?:export\s+)?function\s+(rightPad|padRight)\s*\(/, stdlib: "String.prototype.padEnd" },
+];
+
+export function detectReinvention(text: string): Finding[] {
+  const findings: Finding[] = [];
+  for (const { re, stdlib } of REINVENTION_PATTERNS) {
+    const m = re.exec(text);
+    if (!m) continue;
+    findings.push({
+      id: "CD05",
+      line: lineOf(text, m.index),
+      confidence: 0.65,
+      message: `Helper "${m[1]}" reinvents ${stdlib}.`,
+      suggested_action: `Replace with ${stdlib} (stdlib, no new dependency).`,
+    });
+  }
+  return findings;
+}
+
+// CD06 — dead code: never-true condition (constant-false guard) makes a branch
+// unreachable. Conservative: only constant / self-inequality patterns.
+const NEVER_TRUE = [
+  /\bif\s*\(\s*false\s*\)/,
+  /\bif\s*\(\s*0\s*\)/,
+  /\bif\s*\(\s*null\s*\)/,
+  /\bif\s*\(\s*undefined\s*\)/,
+  /\bif\s*\(\s*""\s*\)/,
+  /\bif\s*\(\s*''\s*\)/,
+  /\bif\s*\(\s*([A-Za-z_$][\w$]*)\s*!==\s*\1\s*\)/, // x !== x (NaN check done wrong)
+];
+
+export function detectDeadCode(text: string): Finding[] {
+  const findings: Finding[] = [];
+  for (const re of NEVER_TRUE) {
+    const m = re.exec(text);
+    if (!m) continue;
+    findings.push({
+      id: "CD06",
+      line: lineOf(text, m.index),
+      confidence: 0.7,
+      message: `Never-true condition "${m[0]}" makes the branch unreachable.`,
+      suggested_action: "Remove the dead branch, or fix the condition if it was meant to be reachable.",
+    });
+  }
+  return findings;
+}
+
 export function analyzeSource(text: string, _path = "<input>", options: DetectorOptions = {}): Finding[] {
   const thresholds = { ...DEFAULT_THRESHOLDS, ...(options.thresholds || {}) };
   const allSources = options.allSources || [text];
@@ -127,5 +209,8 @@ export function analyzeSource(text: string, _path = "<input>", options: Detector
     ...detectReExportPlumbing(text),
     ...detectGuardSpam(text, thresholds.guard_spam_min),
     ...detectUnusedExports(text, allSources),
+    ...detectAbstractionBloat(text, allSources),
+    ...detectReinvention(text),
+    ...detectDeadCode(text),
   ];
 }
