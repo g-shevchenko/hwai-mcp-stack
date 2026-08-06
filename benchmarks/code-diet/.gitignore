@@ -1,0 +1,3 @@
+# raw OSS package clones fetched by scripts/build-*.mjs — regenerate, don't commit
+corpus_v2/_oss/
+node_modules/

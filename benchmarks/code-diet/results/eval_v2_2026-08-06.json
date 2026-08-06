@@ -1,0 +1,282 @@
+{
+  "generated_at": "2026-08-06T07:36:30.322Z",
+  "floors": {
+    "per_class_precision": 0.85,
+    "per_class_recall": 0.8,
+    "clean_fp_rate": 0.05
+  },
+  "oracle_used": {
+    "v2b_injected": true,
+    "v2a_clean": true
+  },
+  "v2b": {
+    "files": 92,
+    "per_class": {
+      "CD01": {
+        "tp": 12,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1,
+        "recall": 1,
+        "f1": 1,
+        "precision_ci": {
+          "lo": 0.7574992425007574,
+          "hi": 1,
+          "p": 1
+        },
+        "recall_ci": {
+          "lo": 0.7574992425007574,
+          "hi": 1,
+          "p": 1
+        }
+      },
+      "CD02": {
+        "tp": 12,
+        "fp": 2,
+        "fn": 0,
+        "precision": 0.8571428571428571,
+        "recall": 1,
+        "f1": 0.923076923076923,
+        "precision_ci": {
+          "lo": 0.600580922361363,
+          "hi": 0.9599069262620787,
+          "p": 0.8571428571428571
+        },
+        "recall_ci": {
+          "lo": 0.7574992425007574,
+          "hi": 1,
+          "p": 1
+        }
+      },
+      "CD03": {
+        "tp": 12,
+        "fp": 19,
+        "fn": 0,
+        "precision": 0.3870967741935484,
+        "recall": 1,
+        "f1": 0.5581395348837209,
+        "precision_ci": {
+          "lo": 0.23732875351271562,
+          "hi": 0.5617619885886803,
+          "p": 0.3870967741935484
+        },
+        "recall_ci": {
+          "lo": 0.7574992425007574,
+          "hi": 1,
+          "p": 1
+        }
+      },
+      "CD04": {
+        "tp": 12,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1,
+        "recall": 1,
+        "f1": 1,
+        "precision_ci": {
+          "lo": 0.7574992425007574,
+          "hi": 1,
+          "p": 1
+        },
+        "recall_ci": {
+          "lo": 0.7574992425007574,
+          "hi": 1,
+          "p": 1
+        }
+      },
+      "CD05": {
+        "tp": 12,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1,
+        "recall": 1,
+        "f1": 1,
+        "precision_ci": {
+          "lo": 0.7574992425007574,
+          "hi": 1,
+          "p": 1
+        },
+        "recall_ci": {
+          "lo": 0.7574992425007574,
+          "hi": 1,
+          "p": 1
+        }
+      },
+      "CD06": {
+        "tp": 12,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1,
+        "recall": 1,
+        "f1": 1,
+        "precision_ci": {
+          "lo": 0.7574992425007574,
+          "hi": 1,
+          "p": 1
+        },
+        "recall_ci": {
+          "lo": 0.7574992425007574,
+          "hi": 1,
+          "p": 1
+        }
+      }
+    }
+  },
+  "v2a": {
+    "files": 100,
+    "clean_fp_rate": 0.1,
+    "clean_fp_ci": {
+      "lo": 0.05522854161313613,
+      "hi": 0.1743673043676654,
+      "p": 0.1
+    },
+    "fp_files": [
+      {
+        "file": "express/response.js",
+        "ids": [
+          "CD02"
+        ]
+      },
+      {
+        "file": "zod/api.ts",
+        "ids": [
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03"
+        ]
+      },
+      {
+        "file": "zod/compat.ts",
+        "ids": [
+          "CD03",
+          "CD03",
+          "CD03"
+        ]
+      },
+      {
+        "file": "zod/core.ts",
+        "ids": [
+          "CD03"
+        ]
+      },
+      {
+        "file": "zod/index.ts",
+        "ids": [
+          "CD04"
+        ]
+      },
+      {
+        "file": "zod/parse.ts",
+        "ids": [
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03"
+        ]
+      },
+      {
+        "file": "zod/regexes.ts",
+        "ids": [
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03"
+        ]
+      },
+      {
+        "file": "zod/schemas.ts",
+        "ids": [
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03"
+        ]
+      },
+      {
+        "file": "zod/to-json-schema.ts",
+        "ids": [
+          "CD03"
+        ]
+      },
+      {
+        "file": "zod/util.ts",
+        "ids": [
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03",
+          "CD03"
+        ]
+      }
+    ]
+  },
+  "verdict": "FAIL",
+  "class_pass": false,
+  "clean_pass": false
+}

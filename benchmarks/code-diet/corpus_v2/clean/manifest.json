@@ -1,0 +1,556 @@
+{
+  "built_at": "2026-08-05T20:47:43.502Z",
+  "files": [
+    {
+      "source": "zod",
+      "file": "zod/checks.ts",
+      "bytes": 761
+    },
+    {
+      "source": "zod",
+      "file": "zod/coerce.ts",
+      "bytes": 1503
+    },
+    {
+      "source": "zod",
+      "file": "zod/compat.ts",
+      "bytes": 2183
+    },
+    {
+      "source": "zod",
+      "file": "zod/errors.ts",
+      "bytes": 2937
+    },
+    {
+      "source": "zod",
+      "file": "zod/external.ts",
+      "bytes": 1217
+    },
+    {
+      "source": "zod",
+      "file": "zod/from-json-schema.ts",
+      "bytes": 22623
+    },
+    {
+      "source": "zod",
+      "file": "zod/iso.ts",
+      "bytes": 753
+    },
+    {
+      "source": "zod",
+      "file": "zod/parse.ts",
+      "bytes": 3220
+    },
+    {
+      "source": "zod",
+      "file": "zod/schemas.ts",
+      "bytes": 97229
+    },
+    {
+      "source": "zod",
+      "file": "zod/api.ts",
+      "bytes": 54893
+    },
+    {
+      "source": "zod",
+      "file": "zod/checks.ts",
+      "bytes": 37708
+    },
+    {
+      "source": "zod",
+      "file": "zod/config.ts",
+      "bytes": 472
+    },
+    {
+      "source": "zod",
+      "file": "zod/core.ts",
+      "bytes": 5223
+    },
+    {
+      "source": "zod",
+      "file": "zod/doc.ts",
+      "bytes": 1204
+    },
+    {
+      "source": "zod",
+      "file": "zod/errors.ts",
+      "bytes": 14334
+    },
+    {
+      "source": "zod",
+      "file": "zod/index.ts",
+      "bytes": 594
+    },
+    {
+      "source": "zod",
+      "file": "zod/json-schema-generator.ts",
+      "bytes": 3981
+    },
+    {
+      "source": "zod",
+      "file": "zod/json-schema-processors.ts",
+      "bytes": 22736
+    },
+    {
+      "source": "zod",
+      "file": "zod/json-schema.ts",
+      "bytes": 3809
+    },
+    {
+      "source": "zod",
+      "file": "zod/parse.ts",
+      "bytes": 7709
+    },
+    {
+      "source": "zod",
+      "file": "zod/regexes.ts",
+      "bytes": 10120
+    },
+    {
+      "source": "zod",
+      "file": "zod/registries.ts",
+      "bytes": 3345
+    },
+    {
+      "source": "zod",
+      "file": "zod/schemas.ts",
+      "bytes": 148594
+    },
+    {
+      "source": "zod",
+      "file": "zod/standard-schema.ts",
+      "bytes": 6324
+    },
+    {
+      "source": "zod",
+      "file": "zod/to-json-schema.ts",
+      "bytes": 20532
+    },
+    {
+      "source": "zod",
+      "file": "zod/util.ts",
+      "bytes": 29681
+    },
+    {
+      "source": "zod",
+      "file": "zod/zsf.ts",
+      "bytes": 6677
+    },
+    {
+      "source": "zod",
+      "file": "zod/ar.ts",
+      "bytes": 5021
+    },
+    {
+      "source": "zod",
+      "file": "zod/az.ts",
+      "bytes": 4331
+    },
+    {
+      "source": "zod",
+      "file": "zod/be.ts",
+      "bytes": 6303
+    },
+    {
+      "source": "zod",
+      "file": "zod/bg.ts",
+      "bytes": 5458
+    },
+    {
+      "source": "zod",
+      "file": "zod/ca.ts",
+      "bytes": 4535
+    },
+    {
+      "source": "zod",
+      "file": "zod/cs.ts",
+      "bytes": 4570
+    },
+    {
+      "source": "zod",
+      "file": "zod/da.ts",
+      "bytes": 4583
+    },
+    {
+      "source": "zod",
+      "file": "zod/de.ts",
+      "bytes": 4403
+    },
+    {
+      "source": "zod",
+      "file": "zod/el.ts",
+      "bytes": 5382
+    },
+    {
+      "source": "zod",
+      "file": "zod/en.ts",
+      "bytes": 4603
+    },
+    {
+      "source": "zod",
+      "file": "zod/eo.ts",
+      "bytes": 4415
+    },
+    {
+      "source": "zod",
+      "file": "zod/es.ts",
+      "bytes": 5160
+    },
+    {
+      "source": "zod",
+      "file": "zod/fa.ts",
+      "bytes": 4947
+    },
+    {
+      "source": "zod",
+      "file": "zod/fi.ts",
+      "bytes": 4634
+    },
+    {
+      "source": "zod",
+      "file": "zod/fr-CA.ts",
+      "bytes": 4379
+    },
+    {
+      "source": "zod",
+      "file": "zod/fr.ts",
+      "bytes": 4887
+    },
+    {
+      "source": "zod",
+      "file": "zod/he.ts",
+      "bytes": 11284
+    },
+    {
+      "source": "zod",
+      "file": "zod/hr.ts",
+      "bytes": 4813
+    },
+    {
+      "source": "zod",
+      "file": "zod/hu.ts",
+      "bytes": 4521
+    },
+    {
+      "source": "zod",
+      "file": "zod/hy.ts",
+      "bytes": 6125
+    },
+    {
+      "source": "zod",
+      "file": "zod/id.ts",
+      "bytes": 4410
+    },
+    {
+      "source": "zod",
+      "file": "zod/index.ts",
+      "bytes": 2149
+    },
+    {
+      "source": "zod",
+      "file": "zod/is.ts",
+      "bytes": 4453
+    },
+    {
+      "source": "zod",
+      "file": "zod/it.ts",
+      "bytes": 4397
+    },
+    {
+      "source": "zod",
+      "file": "zod/ja.ts",
+      "bytes": 4673
+    },
+    {
+      "source": "zod",
+      "file": "zod/ka.ts",
+      "bytes": 6018
+    },
+    {
+      "source": "zod",
+      "file": "zod/km.ts",
+      "bytes": 6055
+    },
+    {
+      "source": "zod",
+      "file": "zod/ko.ts",
+      "bytes": 4723
+    },
+    {
+      "source": "zod",
+      "file": "zod/lt.ts",
+      "bytes": 7703
+    },
+    {
+      "source": "zod",
+      "file": "zod/mk.ts",
+      "bytes": 4974
+    },
+    {
+      "source": "zod",
+      "file": "zod/ms.ts",
+      "bytes": 4310
+    },
+    {
+      "source": "zod",
+      "file": "zod/nl.ts",
+      "bytes": 4569
+    },
+    {
+      "source": "zod",
+      "file": "zod/no.ts",
+      "bytes": 4321
+    },
+    {
+      "source": "zod",
+      "file": "zod/ota.ts",
+      "bytes": 4336
+    },
+    {
+      "source": "zod",
+      "file": "zod/pl.ts",
+      "bytes": 4792
+    },
+    {
+      "source": "zod",
+      "file": "zod/ps.ts",
+      "bytes": 4725
+    },
+    {
+      "source": "zod",
+      "file": "zod/pt.ts",
+      "bytes": 4383
+    },
+    {
+      "source": "zod",
+      "file": "zod/ro.ts",
+      "bytes": 4566
+    },
+    {
+      "source": "zod",
+      "file": "zod/ru.ts",
+      "bytes": 6389
+    },
+    {
+      "source": "zod",
+      "file": "zod/sl.ts",
+      "bytes": 4393
+    },
+    {
+      "source": "zod",
+      "file": "zod/sv.ts",
+      "bytes": 4481
+    },
+    {
+      "source": "zod",
+      "file": "zod/ta.ts",
+      "bytes": 6172
+    },
+    {
+      "source": "zod",
+      "file": "zod/th.ts",
+      "bytes": 6103
+    },
+    {
+      "source": "zod",
+      "file": "zod/tr.ts",
+      "bytes": 4274
+    },
+    {
+      "source": "zod",
+      "file": "zod/uk.ts",
+      "bytes": 5255
+    },
+    {
+      "source": "zod",
+      "file": "zod/ur.ts",
+      "bytes": 5084
+    },
+    {
+      "source": "zod",
+      "file": "zod/uz.ts",
+      "bytes": 4545
+    },
+    {
+      "source": "zod",
+      "file": "zod/vi.ts",
+      "bytes": 4597
+    },
+    {
+      "source": "zod",
+      "file": "zod/yo.ts",
+      "bytes": 4497
+    },
+    {
+      "source": "zod",
+      "file": "zod/zh-CN.ts",
+      "bytes": 4262
+    },
+    {
+      "source": "zod",
+      "file": "zod/zh-TW.ts",
+      "bytes": 4322
+    },
+    {
+      "source": "zod",
+      "file": "zod/checks.ts",
+      "bytes": 736
+    },
+    {
+      "source": "zod",
+      "file": "zod/coerce.ts",
+      "bytes": 1182
+    },
+    {
+      "source": "zod",
+      "file": "zod/external.ts",
+      "bytes": 861
+    },
+    {
+      "source": "zod",
+      "file": "zod/iso.ts",
+      "bytes": 2239
+    },
+    {
+      "source": "zod",
+      "file": "zod/schemas.ts",
+      "bytes": 61288
+    },
+    {
+      "source": "commander",
+      "file": "commander/argument.js",
+      "bytes": 3134
+    },
+    {
+      "source": "commander",
+      "file": "commander/command.js",
+      "bytes": 87647
+    },
+    {
+      "source": "commander",
+      "file": "commander/error.js",
+      "bytes": 1089
+    },
+    {
+      "source": "commander",
+      "file": "commander/help.js",
+      "bytes": 20812
+    },
+    {
+      "source": "commander",
+      "file": "commander/option.js",
+      "bytes": 10237
+    },
+    {
+      "source": "commander",
+      "file": "commander/suggestSimilar.js",
+      "bytes": 2735
+    },
+    {
+      "source": "express",
+      "file": "express/application.js",
+      "bytes": 13953
+    },
+    {
+      "source": "express",
+      "file": "express/express.js",
+      "bytes": 1636
+    },
+    {
+      "source": "express",
+      "file": "express/request.js",
+      "bytes": 12282
+    },
+    {
+      "source": "express",
+      "file": "express/response.js",
+      "bytes": 25146
+    },
+    {
+      "source": "express",
+      "file": "express/utils.js",
+      "bytes": 5293
+    },
+    {
+      "source": "express",
+      "file": "express/view.js",
+      "bytes": 3809
+    },
+    {
+      "source": "hwai-language-graph",
+      "file": "hwai-language-graph/artifact-store.ts",
+      "bytes": 1261
+    },
+    {
+      "source": "hwai-language-graph",
+      "file": "hwai-language-graph/config.ts",
+      "bytes": 2068
+    },
+    {
+      "source": "hwai-language-graph",
+      "file": "hwai-language-graph/graph.ts",
+      "bytes": 30600
+    },
+    {
+      "source": "hwai-language-graph",
+      "file": "hwai-language-graph/index.ts",
+      "bytes": 13741
+    },
+    {
+      "source": "hwai-language-graph",
+      "file": "hwai-language-graph/measurement.ts",
+      "bytes": 6075
+    },
+    {
+      "source": "hwai-language-graph",
+      "file": "hwai-language-graph/request-log.ts",
+      "bytes": 1066
+    },
+    {
+      "source": "hwai-language-graph",
+      "file": "hwai-language-graph/text-utils.ts",
+      "bytes": 1391
+    },
+    {
+      "source": "hwai-repo-hygiene",
+      "file": "hwai-repo-hygiene/artifact-store.ts",
+      "bytes": 1435
+    },
+    {
+      "source": "hwai-repo-hygiene",
+      "file": "hwai-repo-hygiene/config.ts",
+      "bytes": 2150
+    },
+    {
+      "source": "hwai-repo-hygiene",
+      "file": "hwai-repo-hygiene/hygiene.ts",
+      "bytes": 31725
+    },
+    {
+      "source": "hwai-repo-hygiene",
+      "file": "hwai-repo-hygiene/index.ts",
+      "bytes": 14040
+    },
+    {
+      "source": "hwai-repo-hygiene",
+      "file": "hwai-repo-hygiene/measurement.ts",
+      "bytes": 4914
+    },
+    {
+      "source": "hwai-repo-hygiene",
+      "file": "hwai-repo-hygiene/module-depth.ts",
+      "bytes": 10674
+    },
+    {
+      "source": "hwai-repo-hygiene",
+      "file": "hwai-repo-hygiene/request-log.ts",
+      "bytes": 1054
+    },
+    {
+      "source": "hwai-repo-hygiene",
+      "file": "hwai-repo-hygiene/text-utils.ts",
+      "bytes": 967
+    }
+  ],
+  "total_files": 110
+}

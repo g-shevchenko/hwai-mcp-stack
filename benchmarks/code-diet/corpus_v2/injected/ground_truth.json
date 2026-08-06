@@ -1,0 +1,465 @@
+{
+  "built_at": "2026-08-05T20:50:43.284Z",
+  "items": [
+    {
+      "class": "CD01",
+      "file": "cd01-0-commander__command.js",
+      "origin": "commander/command.js"
+    },
+    {
+      "class": "CD01",
+      "file": "cd01-1-zod__ta.ts",
+      "origin": "zod/ta.ts"
+    },
+    {
+      "class": "CD01",
+      "file": "cd01-2-hwai-language-graph__measurement.ts",
+      "origin": "hwai-language-graph/measurement.ts"
+    },
+    {
+      "class": "CD01",
+      "file": "cd01-3-zod__ur.ts",
+      "origin": "zod/ur.ts"
+    },
+    {
+      "class": "CD01",
+      "file": "cd01-4-zod__en.ts",
+      "origin": "zod/en.ts"
+    },
+    {
+      "class": "CD01",
+      "file": "cd01-5-commander__error.js",
+      "origin": "commander/error.js"
+    },
+    {
+      "class": "CD01",
+      "file": "cd01-6-commander__suggestSimilar.js",
+      "origin": "commander/suggestSimilar.js"
+    },
+    {
+      "class": "CD01",
+      "file": "cd01-7-zod__da.ts",
+      "origin": "zod/da.ts"
+    },
+    {
+      "class": "CD01",
+      "file": "cd01-8-zod__parse.ts",
+      "origin": "zod/parse.ts"
+    },
+    {
+      "class": "CD01",
+      "file": "cd01-9-zod__ota.ts",
+      "origin": "zod/ota.ts"
+    },
+    {
+      "class": "CD01",
+      "file": "cd01-10-zod__regexes.ts",
+      "origin": "zod/regexes.ts"
+    },
+    {
+      "class": "CD01",
+      "file": "cd01-11-commander__argument.js",
+      "origin": "commander/argument.js"
+    },
+    {
+      "class": "CD02",
+      "file": "cd02-0-zod__it.ts",
+      "origin": "zod/it.ts"
+    },
+    {
+      "class": "CD02",
+      "file": "cd02-1-zod__no.ts",
+      "origin": "zod/no.ts"
+    },
+    {
+      "class": "CD02",
+      "file": "cd02-2-hwai-language-graph__measurement.ts",
+      "origin": "hwai-language-graph/measurement.ts"
+    },
+    {
+      "class": "CD02",
+      "file": "cd02-3-zod__ca.ts",
+      "origin": "zod/ca.ts"
+    },
+    {
+      "class": "CD02",
+      "file": "cd02-4-zod__zh-TW.ts",
+      "origin": "zod/zh-TW.ts"
+    },
+    {
+      "class": "CD02",
+      "file": "cd02-5-hwai-language-graph__config.ts",
+      "origin": "hwai-language-graph/config.ts"
+    },
+    {
+      "class": "CD02",
+      "file": "cd02-6-zod__nl.ts",
+      "origin": "zod/nl.ts"
+    },
+    {
+      "class": "CD02",
+      "file": "cd02-7-zod__az.ts",
+      "origin": "zod/az.ts"
+    },
+    {
+      "class": "CD02",
+      "file": "cd02-8-zod__en.ts",
+      "origin": "zod/en.ts"
+    },
+    {
+      "class": "CD02",
+      "file": "cd02-9-hwai-repo-hygiene__module-depth.ts",
+      "origin": "hwai-repo-hygiene/module-depth.ts"
+    },
+    {
+      "class": "CD02",
+      "file": "cd02-10-zod__bg.ts",
+      "origin": "zod/bg.ts"
+    },
+    {
+      "class": "CD02",
+      "file": "cd02-11-zod__yo.ts",
+      "origin": "zod/yo.ts"
+    },
+    {
+      "class": "CD03",
+      "file": "cd03-0-zod__zsf.ts",
+      "origin": "zod/zsf.ts"
+    },
+    {
+      "class": "CD03",
+      "file": "cd03-1-zod__compat.ts",
+      "origin": "zod/compat.ts"
+    },
+    {
+      "class": "CD03",
+      "file": "cd03-2-zod__json-schema-processors.ts",
+      "origin": "zod/json-schema-processors.ts"
+    },
+    {
+      "class": "CD03",
+      "file": "cd03-3-zod__fr-CA.ts",
+      "origin": "zod/fr-CA.ts"
+    },
+    {
+      "class": "CD03",
+      "file": "cd03-4-zod__es.ts",
+      "origin": "zod/es.ts"
+    },
+    {
+      "class": "CD03",
+      "file": "cd03-5-zod__zh-CN.ts",
+      "origin": "zod/zh-CN.ts"
+    },
+    {
+      "class": "CD03",
+      "file": "cd03-6-zod__json-schema-generator.ts",
+      "origin": "zod/json-schema-generator.ts"
+    },
+    {
+      "class": "CD03",
+      "file": "cd03-7-hwai-language-graph__graph.ts",
+      "origin": "hwai-language-graph/graph.ts"
+    },
+    {
+      "class": "CD03",
+      "file": "cd03-8-zod__sl.ts",
+      "origin": "zod/sl.ts"
+    },
+    {
+      "class": "CD03",
+      "file": "cd03-9-zod__coerce.ts",
+      "origin": "zod/coerce.ts"
+    },
+    {
+      "class": "CD03",
+      "file": "cd03-10-hwai-repo-hygiene__text-utils.ts",
+      "origin": "hwai-repo-hygiene/text-utils.ts"
+    },
+    {
+      "class": "CD03",
+      "file": "cd03-11-hwai-repo-hygiene__measurement.ts",
+      "origin": "hwai-repo-hygiene/measurement.ts"
+    },
+    {
+      "class": "CD05",
+      "file": "cd05-0-zod__zsf.ts",
+      "origin": "zod/zsf.ts"
+    },
+    {
+      "class": "CD05",
+      "file": "cd05-1-commander__error.js",
+      "origin": "commander/error.js"
+    },
+    {
+      "class": "CD05",
+      "file": "cd05-2-zod__lt.ts",
+      "origin": "zod/lt.ts"
+    },
+    {
+      "class": "CD05",
+      "file": "cd05-3-zod__zh-CN.ts",
+      "origin": "zod/zh-CN.ts"
+    },
+    {
+      "class": "CD05",
+      "file": "cd05-4-express__response.js",
+      "origin": "express/response.js"
+    },
+    {
+      "class": "CD05",
+      "file": "cd05-5-zod__json-schema-generator.ts",
+      "origin": "zod/json-schema-generator.ts"
+    },
+    {
+      "class": "CD05",
+      "file": "cd05-6-zod__pt.ts",
+      "origin": "zod/pt.ts"
+    },
+    {
+      "class": "CD05",
+      "file": "cd05-7-zod__es.ts",
+      "origin": "zod/es.ts"
+    },
+    {
+      "class": "CD05",
+      "file": "cd05-8-hwai-repo-hygiene__config.ts",
+      "origin": "hwai-repo-hygiene/config.ts"
+    },
+    {
+      "class": "CD05",
+      "file": "cd05-9-hwai-repo-hygiene__index.ts",
+      "origin": "hwai-repo-hygiene/index.ts"
+    },
+    {
+      "class": "CD05",
+      "file": "cd05-10-zod__fi.ts",
+      "origin": "zod/fi.ts"
+    },
+    {
+      "class": "CD05",
+      "file": "cd05-11-zod__km.ts",
+      "origin": "zod/km.ts"
+    },
+    {
+      "class": "CD06",
+      "file": "cd06-0-zod__doc.ts",
+      "origin": "zod/doc.ts"
+    },
+    {
+      "class": "CD06",
+      "file": "cd06-1-zod__errors.ts",
+      "origin": "zod/errors.ts"
+    },
+    {
+      "class": "CD06",
+      "file": "cd06-2-zod__fi.ts",
+      "origin": "zod/fi.ts"
+    },
+    {
+      "class": "CD06",
+      "file": "cd06-3-zod__to-json-schema.ts",
+      "origin": "zod/to-json-schema.ts"
+    },
+    {
+      "class": "CD06",
+      "file": "cd06-4-zod__it.ts",
+      "origin": "zod/it.ts"
+    },
+    {
+      "class": "CD06",
+      "file": "cd06-5-zod__lt.ts",
+      "origin": "zod/lt.ts"
+    },
+    {
+      "class": "CD06",
+      "file": "cd06-6-zod__id.ts",
+      "origin": "zod/id.ts"
+    },
+    {
+      "class": "CD06",
+      "file": "cd06-7-zod__ca.ts",
+      "origin": "zod/ca.ts"
+    },
+    {
+      "class": "CD06",
+      "file": "cd06-8-zod__mk.ts",
+      "origin": "zod/mk.ts"
+    },
+    {
+      "class": "CD06",
+      "file": "cd06-9-zod__json-schema-generator.ts",
+      "origin": "zod/json-schema-generator.ts"
+    },
+    {
+      "class": "CD06",
+      "file": "cd06-10-zod__da.ts",
+      "origin": "zod/da.ts"
+    },
+    {
+      "class": "CD06",
+      "file": "cd06-11-zod__registries.ts",
+      "origin": "zod/registries.ts"
+    },
+    {
+      "class": "CD04",
+      "file": "cd04-0-barrel.ts",
+      "origin": null
+    },
+    {
+      "class": "CD04",
+      "file": "cd04-1-barrel.ts",
+      "origin": null
+    },
+    {
+      "class": "CD04",
+      "file": "cd04-2-barrel.ts",
+      "origin": null
+    },
+    {
+      "class": "CD04",
+      "file": "cd04-3-barrel.ts",
+      "origin": null
+    },
+    {
+      "class": "CD04",
+      "file": "cd04-4-barrel.ts",
+      "origin": null
+    },
+    {
+      "class": "CD04",
+      "file": "cd04-5-barrel.ts",
+      "origin": null
+    },
+    {
+      "class": "CD04",
+      "file": "cd04-6-barrel.ts",
+      "origin": null
+    },
+    {
+      "class": "CD04",
+      "file": "cd04-7-barrel.ts",
+      "origin": null
+    },
+    {
+      "class": "CD04",
+      "file": "cd04-8-barrel.ts",
+      "origin": null
+    },
+    {
+      "class": "CD04",
+      "file": "cd04-9-barrel.ts",
+      "origin": null
+    },
+    {
+      "class": "CD04",
+      "file": "cd04-10-barrel.ts",
+      "origin": null
+    },
+    {
+      "class": "CD04",
+      "file": "cd04-11-barrel.ts",
+      "origin": null
+    },
+    {
+      "class": "CLEAN",
+      "file": "control-commander__argument.js",
+      "origin": "commander/argument.js"
+    },
+    {
+      "class": "CLEAN",
+      "file": "control-commander__command.js",
+      "origin": "commander/command.js"
+    },
+    {
+      "class": "CLEAN",
+      "file": "control-commander__error.js",
+      "origin": "commander/error.js"
+    },
+    {
+      "class": "CLEAN",
+      "file": "control-commander__help.js",
+      "origin": "commander/help.js"
+    },
+    {
+      "class": "CLEAN",
+      "file": "control-commander__option.js",
+      "origin": "commander/option.js"
+    },
+    {
+      "class": "CLEAN",
+      "file": "control-commander__suggestSimilar.js",
+      "origin": "commander/suggestSimilar.js"
+    },
+    {
+      "class": "CLEAN",
+      "file": "control-express__application.js",
+      "origin": "express/application.js"
+    },
+    {
+      "class": "CLEAN",
+      "file": "control-express__express.js",
+      "origin": "express/express.js"
+    },
+    {
+      "class": "CLEAN",
+      "file": "control-express__request.js",
+      "origin": "express/request.js"
+    },
+    {
+      "class": "CLEAN",
+      "file": "control-express__response.js",
+      "origin": "express/response.js"
+    },
+    {
+      "class": "CLEAN",
+      "file": "control-express__utils.js",
+      "origin": "express/utils.js"
+    },
+    {
+      "class": "CLEAN",
+      "file": "control-express__view.js",
+      "origin": "express/view.js"
+    },
+    {
+      "class": "CLEAN",
+      "file": "control-hwai-language-graph__artifact-store.ts",
+      "origin": "hwai-language-graph/artifact-store.ts"
+    },
+    {
+      "class": "CLEAN",
+      "file": "control-hwai-language-graph__config.ts",
+      "origin": "hwai-language-graph/config.ts"
+    },
+    {
+      "class": "CLEAN",
+      "file": "control-hwai-language-graph__graph.ts",
+      "origin": "hwai-language-graph/graph.ts"
+    },
+    {
+      "class": "CLEAN",
+      "file": "control-hwai-language-graph__index.ts",
+      "origin": "hwai-language-graph/index.ts"
+    },
+    {
+      "class": "CLEAN",
+      "file": "control-hwai-language-graph__measurement.ts",
+      "origin": "hwai-language-graph/measurement.ts"
+    },
+    {
+      "class": "CLEAN",
+      "file": "control-hwai-language-graph__request-log.ts",
+      "origin": "hwai-language-graph/request-log.ts"
+    },
+    {
+      "class": "CLEAN",
+      "file": "control-hwai-language-graph__text-utils.ts",
+      "origin": "hwai-language-graph/text-utils.ts"
+    },
+    {
+      "class": "CLEAN",
+      "file": "control-hwai-repo-hygiene__artifact-store.ts",
+      "origin": "hwai-repo-hygiene/artifact-store.ts"
+    }
+  ]
+}
