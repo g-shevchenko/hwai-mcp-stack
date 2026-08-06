@@ -1,6 +1,6 @@
 # code-diet-mcp — Scientific Evaluation Protocol (v1, 2026-08-05)
 
-> Status: **design**. This is the measurement plan that turns the benchmark from a
+> Status: **measured**. This is the measurement plan that turns the benchmark from a
 > smoke-test (N=8 synthetic) into evidence fit for an engineering note. It follows
 > repo rules: `blind-validation-when-author-contaminated`, `eval-discipline-polarity-guard`,
 > `tdd-verify-red`, `measure-before-deploy-prod-changes`.
