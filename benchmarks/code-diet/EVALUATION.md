@@ -248,6 +248,43 @@ operation with no project-root precondition, (b) the CD01/CD02/CD04/CD05 classes
 no baseline detects, and (c) a language-graph oracle path for CD03 on application
 repos. The engineering note must claim exactly this and no more.
 
+## 5f. v2c blind-label results (2026-08-06) — grader v2 extended, run captured
+
+Task 2 blind-labeled `corpus_v2/real_ai` (30 files, no key/detector access);
+task 3 extended grader v2 with a `v2c` section (same TP/FP/FN + Wilson-CI
+logic as v2b) and ran it. Full output: `results/eval_v2_full_2026-08-06.txt`;
+machine-readable: `results/eval_v2_2026-08-06.json` → `v2c`.
+
+| class | tp | fp | fn | precision | recall | F1 | precision 95% CI | recall 95% CI |
+|---|---|---|---|---|---|---|---|---|
+| CD01 | 0 | 0 | 0 | 1.00* | 1.00* | 1.00* | [0.00, 0.00] | [0.00, 0.00] |
+| CD02 | 0 | 0 | 0 | 1.00* | 1.00* | 1.00* | [0.00, 0.00] | [0.00, 0.00] |
+| CD03 | 0 | 13 | 1 | 0.00 | 0.00 | 0.00 | [0.00, 0.23] | [0.00, 0.79] |
+| CD04 | 0 | 0 | 0 | 1.00* | 1.00* | 1.00* | [0.00, 0.00] | [0.00, 0.00] |
+| CD05 | 0 | 0 | 0 | 1.00* | 1.00* | 1.00* | [0.00, 0.00] | [0.00, 0.00] |
+| CD06 | 0 | 0 | 0 | 1.00* | 1.00* | 1.00* | [0.00, 0.00] | [0.00, 0.00] |
+
+`*` = grader's 0/0⇒1.00 convention, not evidence of performance — n=0 for
+five of six classes on this 30-file, 1-blind-finding stratum (zero
+statistical power, degenerate CI). **CD03 is the one real signal:** 13 FP,
+1 FN, 0 TP → precision 0.00 (CI [0.00, 0.23]). This corroborates, not adds
+a new bug to, the §5b/§5d out-of-sample-consumer boundary: the 30-file
+sample cannot see cross-service callers, so CD03 over-fires on legitimate
+exports it judges unreferenced. The 1 FN is the single genuine finding the
+blind labeler found (`vision-mcp/src/artifact-store.ts:16`, `artifactDir()`).
+v2c is diagnostic only — it is not folded into `class_pass`/`clean_pass`/
+`verdict` (§4 pre-registers floors for v2a/v2b only), so this result does
+not change the FAIL verdict already documented in §5d.
+
+**Contamination log: none.** No change was made to detector source
+(`mcp/source/services/code-diet-mcp/src/detectors.ts` or its built
+`dist/detectors.js`) after the blind labels were produced or after seeing
+this result, per task 3's instruction to report a low v2c number as-is. The
+only code change in this window was grader instrumentation (`grade-v2.mjs`
+gained a `v2c` scoring block) to *read* the blind labels, which is not a
+detector change and does not require a re-label. Full numbers and
+interpretation: `RESULTS.md` §5.
+
 ## 6. Reproducibility
 
 `npm run eval:v2` runs: corpus build → baselines → detectors → grader v2 →
@@ -257,6 +294,13 @@ the HWAI-tuned threshold values (moat).
 
 ## 7. Done condition for this phase
 
-All of: v2a+v2b corpora built; v2c blind-labeled; 3 baselines measured; grader v2
-emits per-class P/R/F1 + Wilson CI; polarity guard applied to every comparative
-claim; RESULTS.md written. Only then the engineering note (todo #8).
+Status: **met, 2026-08-06.** All items below are now true, in commit order:
+
+- [x] v2a + v2b corpora built (§2; `corpus_v2/clean` 100 files, `corpus_v2/injected` 92 files — task 1)
+- [x] v2c blind-labeled (§5f; `corpus_v2/real_ai/blind_labels.json`, 30 files, no detector/key access — task 2)
+- [x] 3 baselines measured (§5e; knip / ts-prune / ESLint, `results/baselines_2026-08-06.json` — prior session)
+- [x] grader v2 emits per-class P/R/F1 + Wilson CI, now for v2a, v2b, **and v2c** (§5f; `results/eval_v2_2026-08-06.json`, `results/eval_v2_full_2026-08-06.txt` — task 3)
+- [x] polarity guard applied to every comparative claim (RESULTS.md §7 lists every claim de-directionalized this way)
+- [x] RESULTS.md written (task 4; numbers-only synthesis of §5b–§5f)
+
+Only then the engineering note (todo #8) — which this phase's done condition now unlocks. No detector change was made anywhere in this phase after v2c blind labels existed (contamination log: none, §5f), so no re-label is required before todo #8 starts.
