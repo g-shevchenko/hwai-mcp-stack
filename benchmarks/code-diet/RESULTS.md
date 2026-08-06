@@ -405,6 +405,50 @@ only) — contamination log: none.
   a corpus-*sampled* package; on a fully-indexed application repo (dogfooding,
   §4 scope statement) recall is not bounded by this artifact.
 
+## 15. CD07 duplicate-export detector (#19) — measured
+
+Spec-row completion (eval v2b, #19). Definition adopted from `knip`: the SAME
+symbol re-exported from MORE THAN ONE barrel/entry path forces importers to guess
+which path is canonical. The first path in corpus order is canonical; second-and-
+later paths are flagged. Cross-file — requires `corpusFiles`.
+
+Grader: `grade-cd07.mjs` → `results/eval_cd07_<date>.json`.
+
+| Measurement | Corpus | Result | Verdict |
+|---|---|---|---|
+| FP-floor | clean single-path pkgs (commander, express, hwai-*) | 0 findings | **PASS (0 FP)** |
+| positive real-world | zod (parallel public surfaces: index + external + compat) | 2 findings (`config`, `lt`) | **PASS** |
+| recall | synthetic fan (same symbol from two entry paths) | 1 finding on non-canonical path | **PASS** |
+
+**Contract note:** zod is NOT a single-path corpus — it intentionally re-exports
+the same symbols through parallel public surfaces (`index.ts` + `external.ts` +
+`compat.ts`). Those are TRUE duplicate-export findings, not false positives. zod
+is therefore measured as the positive/real-world class, and the FP-floor is
+measured only on the strictly single-path packages.
+
+## 16. CD08 stale-file detector (#17, detect_drift) — measured
+
+Spec-row completion (#17). Definition: a file whose last `git commit` is older
+than the staleness threshold (default 90d) is likely abandoned code that drifts
+out of sync. Per spec §8 (no network/FS inside detectors) the git signal is
+INJECTED as `fileGitAges` (path -> days since last commit) by the caller; the
+detector stays a pure function and is inert without the signal. CD08 is a WARN
+(confidence 0.5), never a deletion verdict — a stale file may be load-bearing.
+
+Research basis: git last-commit is the authoritative staleness signal (mtime lies
+under touch/checkout/formatter).
+
+Grader: `grade-cd08.mjs` → `results/eval_cd08_<date>.json`.
+
+| Measurement | Corpus | Result | Verdict |
+|---|---|---|---|
+| FP-floor | code-diet src (fresh repo) + clean corpus | 0 findings on fresh files | **PASS (0 FP)** |
+| recall | greg-personal-claude `scripts/*.mjs` (1101 files, real ages) | 31/31 stale (>90d) flagged | **recall 1.0, 0 FP on fresh** |
+
+The fresh-repo corpus yields recall n/a (no stale files) — reported as n/a, not
+as a pass. The real recall signal comes from the mature greg-personal-claude
+repo: every file with git age > 90d is flagged, and no fresh file is.
+
 ## 10. Section list (for the evidence packet)
 
 1. Corpus sizes
@@ -421,3 +465,5 @@ only) — contamination log: none.
 12. v3 vs v2a — the accounting correction
 13. Polarity guard — v3 claims
 14. Threats to validity — v3 additions
+15. CD07 duplicate-export detector (#19) — measured
+16. CD08 stale-file detector (#17, detect_drift) — measured

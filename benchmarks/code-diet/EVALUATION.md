@@ -540,3 +540,29 @@ finding **`seen_before: true` (0 new / 1 recurring)**.
 **Reproducibility:** `node --test mcp/source/services/code-diet-mcp/test/findings_store.test.mjs`.
 
 
+
+## 11. CD07 duplicate-export (#19) + CD08 stale-file (#17) — spec-row completion, measured
+
+Both detectors implemented TDD (verify-red -> implement -> verify-green) and measured
+with deterministic graders; no regression to CD01-CD06 baselines.
+
+**CD07 duplicate-export (#19).** Definition adopted from `knip`: the same symbol
+re-exported from more than one barrel/entry path. First corpus path is canonical;
+later paths flagged. Cross-file via `corpusFiles`. Measured by `grade-cd07.mjs`:
+
+- FP-floor 0 on clean single-path packages (commander, express, hwai-*).
+- positive real-world: zod (parallel public surfaces index+external+compat) -> 2 true
+  findings (`config`, `lt`). zod is NOT single-path, so it is the positive class, not FP-floor.
+- recall 1 on the synthetic fan corpus.
+
+**CD08 stale-file (#17, detect_drift).** Definition: last `git commit` older than
+`stale_file_days` (default 90). Git signal INJECTED as `fileGitAges` by the caller
+(spec §8 no-FS) — the detector is a pure function, inert without the signal. WARN
+(confidence 0.5), never a deletion verdict. Measured by `grade-cd08.mjs`:
+
+- FP-floor 0 on fresh files (code-diet src + clean corpus).
+- recall on the mature greg-personal-claude repo (`scripts/*.mjs`, 1101 files, real
+  `git log` ages): 31/31 stale (>90d) files flagged, 0 FP on fresh -> recall 1.0.
+
+Full tables: `RESULTS.md` §15, §16. Grader JSON: `results/eval_cd07_<date>.json`,
+`results/eval_cd08_<date>.json`.

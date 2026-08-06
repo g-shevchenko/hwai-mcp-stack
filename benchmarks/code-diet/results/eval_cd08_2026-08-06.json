@@ -1,0 +1,25 @@
+{
+  "generated_at": "2026-08-06T15:00:00.752Z",
+  "grader": "cd08",
+  "scope": "CD08 stale-file detector on the code-diet service's own src (detect_drift, #17)",
+  "threshold_days": 90,
+  "signal": "git log -1 --format=%ct per file, injected as fileGitAges (spec §8 no-FS)",
+  "totals": {
+    "files": 4,
+    "fresh_files": 4,
+    "stale_files": 0
+  },
+  "fp_floor": {
+    "contract": "CD08 on a file with age <= threshold is a false positive",
+    "findings": 0,
+    "pass": true,
+    "detail": []
+  },
+  "recall": {
+    "contract": "a file with age > threshold gets a CD08 warn",
+    "stale_files": 0,
+    "flagged": 0,
+    "pass": "n/a (no stale files in a fresh repo)",
+    "detail": []
+  }
+}

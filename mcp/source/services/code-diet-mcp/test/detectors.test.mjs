@@ -326,3 +326,71 @@ test("CD03 oracle: oracle failure degrades to text-candidate mode (conservative)
   assert.ok(cd03.length >= 1, "oracle failure must still yield a candidate");
   assert.ok(cd03[0].confidence <= 0.5, `degraded candidate should keep low confidence, got ${cd03[0].confidence}`);
 });
+
+// CD07 duplicate export (eval v2b, #19; knip-consistent). The SAME symbol re-exported
+// from MORE THAN ONE barrel/entry path forces tools and humans to guess which path is
+// canonical. Cross-file: needs corpusFiles to see the other barrels. The detector flags
+// the NON-canonical (second and later) re-export paths; the first path seen is canonical.
+test("CD07 duplicate export: same symbol re-exported from two barrels is flagged on the non-canonical path", async () => {
+  const leaf = `export function foo() { return 1; }\n`;
+  const barrelA = `export { foo } from "./leaf.js";\n`; // canonical (first path)
+  const barrelB = `export { foo } from "./leaf.js";\n`; // duplicate path -> flagged
+  const findings = await analyzeSource(barrelB, "b.ts", {
+    allSources: [leaf, barrelA, barrelB],
+    corpusFiles: [
+      { file: "leaf.ts", text: leaf },
+      { file: "a.ts", text: barrelA },
+      { file: "b.ts", text: barrelB },
+    ],
+  });
+  const cd07 = findings.filter((f) => f.id === "CD07");
+  assert.ok(cd07.length >= 1, `expected a CD07 duplicate-export finding, got ${JSON.stringify(findings)}`);
+  assert.ok(/foo/.test(cd07[0].message), `CD07 message must name the duplicated symbol, got "${cd07[0].message}"`);
+});
+
+test("CD07 duplicate export: a symbol re-exported from only ONE path is NOT flagged", async () => {
+  const leaf = `export function foo() { return 1; }\nexport function bar() { return 2; }\n`;
+  const barrelA = `export { foo } from "./leaf.js";\nexport { bar } from "./leaf.js";\n`; // each once
+  const findings = await analyzeSource(barrelA, "a.ts", {
+    allSources: [leaf, barrelA],
+    corpusFiles: [
+      { file: "leaf.ts", text: leaf },
+      { file: "a.ts", text: barrelA },
+    ],
+  });
+  const cd07 = findings.filter((f) => f.id === "CD07");
+  assert.equal(cd07.length, 0, `single-path re-export must not be CD07, got ${JSON.stringify(cd07)}`);
+});
+
+// CD08 stale file (detect_drift, #17). A file whose last git commit is older than the
+// staleness threshold AND that is not a live/catalogued service is "stale" — likely
+// abandoned code that drifts. Per spec §8 (no network/FS inside detectors), the git
+// signal is INJECTED as fileGitAges (path -> days since last commit), computed by the
+// caller from git log; the detector itself stays a pure function.
+test("CD08 stale file: a file with git age above the threshold is flagged (warn)", async () => {
+  const src = `export function old() { return 1; }\nexport const used = old();\n`;
+  const findings = await analyzeSource(src, "legacy.ts", {
+    allSources: [src],
+    fileGitAges: { "legacy.ts": 200 }, // last commit 200 days ago
+  });
+  const cd08 = findings.filter((f) => f.id === "CD08");
+  assert.ok(cd08.length >= 1, `expected a CD08 stale-file finding, got ${JSON.stringify(findings)}`);
+  assert.ok(cd08[0].confidence < 0.7, `CD08 is a warn, not a deletion verdict, got ${cd08[0].confidence}`);
+});
+
+test("CD08 stale file: a recently-committed file is NOT flagged", async () => {
+  const src = `export function fresh() { return 1; }\nexport const used = fresh();\n`;
+  const findings = await analyzeSource(src, "active.ts", {
+    allSources: [src],
+    fileGitAges: { "active.ts": 5 }, // committed 5 days ago
+  });
+  const cd08 = findings.filter((f) => f.id === "CD08");
+  assert.equal(cd08.length, 0, `a fresh file must not be CD08, got ${JSON.stringify(cd08)}`);
+});
+
+test("CD08 stale file: no git-age signal -> detector is inert (spec §8 no FS)", async () => {
+  const src = `export function f() { return 1; }\nexport const u = f();\n`;
+  const findings = await analyzeSource(src, "x.ts", { allSources: [src] });
+  const cd08 = findings.filter((f) => f.id === "CD08");
+  assert.equal(cd08.length, 0, `without injected git ages CD08 must be inert, got ${JSON.stringify(cd08)}`);
+});

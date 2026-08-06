@@ -4,7 +4,7 @@
 // and are injected via DetectorOptions.thresholds, never committed here.
 
 export interface Finding {
-  id: "CD01" | "CD02" | "CD03" | "CD04" | "CD05" | "CD06";
+  id: "CD01" | "CD02" | "CD03" | "CD04" | "CD05" | "CD06" | "CD07" | "CD08";
   line: number;
   confidence: number;
   message: string;
@@ -13,6 +13,7 @@ export interface Finding {
 
 export interface DetectorThresholds {
   guard_spam_min: number; // CD02: guards in one function above this is spam
+  stale_file_days: number; // CD08: git last-commit age above this is stale
 }
 
 export interface DetectorOptions {
@@ -25,6 +26,10 @@ export interface DetectorOptions {
   corpusEntry?: CorpusEntry;
   // Named corpus files (path + text) for cross-file module resolution (CD04 chain).
   corpusFiles?: CorpusFiles;
+  // Git last-commit age in days per file (path -> days), computed by the CALLER from
+  // `git log` (spec §8: no network/FS inside detectors). Drives CD08 staleness.
+  // Injected like corpusFiles; when absent CD08 is inert.
+  fileGitAges?: Record<string, number>;
   // Language-graph oracle: when provided, CD03 confirms text-based candidates against
   // the graph's cross-file reference count (eval v2 §5c decision).
   languageGraphOracle?: LanguageGraphOracle;
@@ -33,6 +38,7 @@ export interface DetectorOptions {
 
 const DEFAULT_THRESHOLDS: DetectorThresholds = {
   guard_spam_min: 5,
+  stale_file_days: 90,
 };
 
 function lineOf(text: string, index: number): number {
@@ -127,6 +133,66 @@ function normalizePath(p: string): string {
     else out.push(part);
   }
   return out.join("/");
+}
+
+// CD07 — duplicate export (eval v2b, #19; knip-consistent). The SAME symbol re-exported
+// from MORE THAN ONE barrel/entry path forces tools and humans to guess which path is
+// canonical (knip "duplicate exports"; mcp-use #1449: "symbols re-exported from more
+// than one entry"). Cross-file: needs corpusFiles to see the other barrels. The FIRST
+// path in corpus order is canonical; the second-and-later paths are flagged. Only pure
+// `export { name } from "..."` re-export lines are counted (a barrel re-exporting the
+// SAME symbol twice is not a cross-path duplicate).
+export function detectDuplicateExport(text: string, selfFile: string, corpusFiles?: CorpusFiles): Finding[] {
+  if (!corpusFiles || corpusFiles.length === 0) return [];
+  // First re-export path per symbol across the whole corpus (canonical).
+  const canonical = new Map<string, string>();
+  for (const f of corpusFiles) {
+    for (const name of reExportedNames(f.text)) {
+      if (!canonical.has(name)) canonical.set(name, f.file);
+    }
+  }
+  const findings: Finding[] = [];
+  const re = /\bexport\s*\{([^}]*)\}\s*from\s*["']([^"']+)["']/g;
+  let m: RegExpExecArray | null;
+  const seenInSelf = new Set<string>();
+  while ((m = re.exec(text))) {
+    for (const part of m[1].split(",")) {
+      const asM = part.match(/\bas\s+([A-Za-z_$][\w$]*)/);
+      const idM = part.trim().match(/^([A-Za-z_$][\w$]*)/);
+      const name = asM ? asM[1] : idM ? idM[1] : null;
+      if (!name || name === "default" || seenInSelf.has(name)) continue;
+      seenInSelf.add(name);
+      const canon = canonical.get(name);
+      if (canon && canon !== selfFile) {
+        findings.push({
+          id: "CD07",
+          line: lineOf(text, m.index),
+          confidence: 0.7,
+          message: `Duplicate export: symbol "${name}" is re-exported from more than one path (canonical: ${canon}; this path: ${selfFile}).`,
+          suggested_action: `Keep one canonical re-export path for "${name}" (${canon}); delete the duplicate path so importers stop guessing which is authoritative.`,
+        });
+        break; // one finding per file is enough; the file has at least one duplicate path
+      }
+    }
+    if (findings.length) break;
+  }
+  return findings;
+}
+
+// Names re-exported by a file's pure `export { a, b as c } from "..."` lines.
+function reExportedNames(text: string): string[] {
+  const names: string[] = [];
+  const re = /\bexport\s*\{([^}]*)\}\s*from\s*["'][^"']+["']/g;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(text))) {
+    for (const part of m[1].split(",")) {
+      const asM = part.match(/\bas\s+([A-Za-z_$][\w$]*)/);
+      const idM = part.trim().match(/^([A-Za-z_$][\w$]*)/);
+      const name = asM ? asM[1] : idM ? idM[1] : null;
+      if (name && name !== "default") names.push(name);
+    }
+  }
+  return names;
 }
 
 // CD02 — guard-clause / fallback spam: a function body packed with defensive early returns.
@@ -452,6 +518,30 @@ export function detectDeadCode(text: string): Finding[] {
   return findings;
 }
 
+// CD08 — stale file (detect_drift, #17). A file whose last git commit is older than the
+// staleness threshold is likely abandoned code that drifts out of sync with the rest of
+// the repo. Per spec §8 (no network/FS inside detectors) the git signal is INJECTED as
+// fileGitAges (path -> days since last commit) by the caller, which computes it from
+// `git log`. The detector stays a pure function; without injected ages it is inert.
+// Research basis: git last-commit is the authoritative staleness signal (mtime lies
+// under touch/checkout/formatter); repowise `index_age_days`/`stale_warning` and
+// git-branch aging use HEAD-divergence/commit-age, not mtime. CD08 is a WARN (low
+// confidence), not a deletion verdict — a stale file may still be load-bearing.
+export function detectStaleFile(selfFile: string, fileGitAges?: Record<string, number>, thresholdDays = 90): Finding[] {
+  if (!fileGitAges) return [];
+  const age = fileGitAges[selfFile];
+  if (age === undefined || age <= thresholdDays) return [];
+  return [
+    {
+      id: "CD08",
+      line: 1,
+      confidence: 0.5,
+      message: `Stale file: last git commit ${age}d ago (threshold ${thresholdDays}d). Likely abandoned — it may have drifted out of sync.`,
+      suggested_action: "Review whether this file is still load-bearing; if abandoned, delete or refresh it. Warn only — confirm before removing.",
+    },
+  ];
+}
+
 export async function analyzeSource(text: string, _path = "<input>", options: DetectorOptions = {}): Promise<Finding[]> {
   const thresholds = { ...DEFAULT_THRESHOLDS, ...(options.thresholds || {}) };
   const allSources = options.allSources || [text];
@@ -459,10 +549,12 @@ export async function analyzeSource(text: string, _path = "<input>", options: De
   return [
     ...detectReExportPlumbing(text),
     ...detectReExportChain(text, _path, options.corpusFiles),
+    ...detectDuplicateExport(text, _path, options.corpusFiles),
     ...detectGuardSpam(text, thresholds.guard_spam_min),
     ...(await detectUnusedExports(text, allSources, publicApiSources, options.corpusEntry, options.languageGraphOracle, _path)),
     ...detectAbstractionBloat(text, allSources),
     ...detectReinvention(text),
     ...detectDeadCode(text),
+    ...detectStaleFile(_path, options.fileGitAges, thresholds.stale_file_days),
   ];
 }

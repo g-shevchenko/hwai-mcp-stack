@@ -1,0 +1,48 @@
+{
+  "generated_at": "2026-08-06T15:03:49.240Z",
+  "grader": "cd07",
+  "scope": "CD07 duplicate-export detector (eval v2b, #19)",
+  "fp_floor": {
+    "corpus": "corpus_v2/clean single-path packages (commander, express, hwai-*)",
+    "contract": "zod excluded — it has TRUE duplicate exports (parallel public surfaces), see positive_real_world",
+    "packages": [
+      "commander",
+      "express",
+      "hwai-language-graph",
+      "hwai-repo-hygiene"
+    ],
+    "files_scanned": 100,
+    "findings": 0,
+    "pass": true,
+    "detail": []
+  },
+  "positive_real_world": {
+    "corpus": "zod (parallel public surfaces: index + external + compat re-export same symbols)",
+    "findings": 2,
+    "pass": true,
+    "detail": [
+      {
+        "pkg": "zod",
+        "file": "external.ts",
+        "message": "Duplicate export: symbol \"config\" is re-exported from more than one path (canonical: compat.ts; this path: external.ts)."
+      },
+      {
+        "pkg": "zod",
+        "file": "index.ts",
+        "message": "Duplicate export: symbol \"lt\" is re-exported from more than one path (canonical: checks.ts; this path: index.ts)."
+      }
+    ]
+  },
+  "recall": {
+    "corpus": "synthetic fan (same symbol re-exported from two entry paths)",
+    "findings": 1,
+    "expect": ">=1",
+    "pass": true,
+    "detail": [
+      {
+        "file": "b.ts",
+        "message": "Duplicate export: symbol \"foo\" is re-exported from more than one path (canonical: a.ts; this path: b.ts)."
+      }
+    ]
+  }
+}
