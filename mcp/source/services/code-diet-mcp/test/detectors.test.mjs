@@ -164,6 +164,70 @@ test("CD03 oracle: a text-candidate with NO graph refs IS flagged (high confiden
   );
 });
 
+// Task 7 (pre-registered, dogfood regression gate): a text-based regex over raw source
+// cannot tell "code" from "text inside a backtick string". Reproduced against real prod
+// files (mcp/source/services/repo-quality-gate-mcp/scripts/benchmark-local.mjs) — a
+// fixture-generator script builds .ts source via template literals
+// (`` `export const generated${index} = ${index};` ``); code-diet scanned the .mjs
+// script itself and flagged "generated$" etc. as unrequested exports of the SCRIPT,
+// which never declares them — the text only exists inside a string it writes elsewhere.
+test("CD03 does NOT flag an export declared only inside a template literal (dogfood FP: fixture-generator scripts)", async () => {
+  const src = [
+    'import fs from "node:fs";',
+    "await fs.writeFile(",
+    '  "out.ts",',
+    "  `export const generated = 1;`,",
+    '  "utf8",',
+    ");",
+  ].join("\n");
+  const findings = await analyzeSource(src, "gen.mjs", { allSources: [src] });
+  const cd03 = findings.filter((f) => f.id === "CD03");
+  assert.equal(
+    cd03.length,
+    0,
+    `export text inside a template literal is not a real declaration, got ${JSON.stringify(cd03)}`,
+  );
+});
+
+// The mirror case: an export name that appears elsewhere ONLY as text inside a template
+// literal (e.g. a doc string mentioning the symbol) must not count as a real reference —
+// otherwise the template-literal fix above would trade a false positive for a false
+// negative (a genuinely dead export hidden by an incidental string mention).
+test("CD03: a name mentioned only inside a template literal does not count as a reference", async () => {
+  const src = [
+    "export function realDeadExport() { return 1; }",
+    "const note = `see realDeadExport in the docs`;",
+  ].join("\n");
+  const findings = await analyzeSource(src, "d.ts", { allSources: [src] });
+  const cd03 = findings.filter((f) => f.id === "CD03" && f.message.includes("realDeadExport"));
+  assert.ok(
+    cd03.length >= 1,
+    `a mention inside a template literal must not suppress a true CD03, got ${JSON.stringify(findings)}`,
+  );
+});
+
+// Regression on the template-literal fix itself: a call inside a `${...}` interpolation
+// is REAL executed code, not string text — reproduced against corpus_v2/clean/zod/errors.ts
+// (`` `  → at ${toDotPath(issue.path)}` ``), which surfaced as a NEW v2a clean FP
+// (0.100 -> 0.110) after the naive blank-the-whole-backtick-string fix landed, because it
+// blanked the `${toDotPath(...)}` call along with the surrounding string text.
+test("CD03: a call inside a template literal's ${...} interpolation DOES count as a reference", async () => {
+  const src = [
+    "export function toDotPath(path) { return path.join('.'); }",
+    "function prettifyError(issue) {",
+    "  return `  -> at ${toDotPath(issue.path)}`;",
+    "}",
+    "export { prettifyError };",
+  ].join("\n");
+  const findings = await analyzeSource(src, "d.ts", { allSources: [src] });
+  const cd03 = findings.filter((f) => f.id === "CD03" && f.message.includes("toDotPath"));
+  assert.equal(
+    cd03.length,
+    0,
+    `a call inside a template-literal interpolation is a real reference, got ${JSON.stringify(cd03)}`,
+  );
+});
+
 test("CD03 oracle: oracle failure degrades to text-candidate mode (conservative)", async () => {
   const lib = `export function maybe() { return 1; }\n`;
   const oracle = {

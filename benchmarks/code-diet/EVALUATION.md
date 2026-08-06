@@ -131,6 +131,7 @@ Four detector refinements were attempted against the CD03 library-FP class and e
 | 3 | + `export *` 1-hop star reachability via entry | 0.180 | FAIL (worse) |
 | 4 | namespaced (`ns.name`) + named-import cross-file match | 0.220 | FAIL (worse) |
 | — | **revert to #1 + scope statement** | **0.120** | FAIL (documented) |
+| 5 | template-literal blanking for `exportedNames`/reference-corpus (task 7, 2026-08-06, post-oracle) | 0.100 (unchanged) | PASS (no regression) |
 
 **Interpretation.** Each added heuristic moved FP in *unpredictable* directions because
 text-based reference counting cannot resolve JS module reachability:
@@ -151,6 +152,27 @@ as the documented applicability boundary, not chased to 0.05 by regex tuning.
 *text-based* analysis on module-graph code. The correct fix is not a better regex — it
 is to **consume the language-graph** (`find_references`) as the reference oracle for
 CD03, which is planned work (§8), not more threshold tuning.
+
+**Iteration #5 (task 7, pre-registered regression gate, 2026-08-06, after §5d oracle):**
+reproduced a real dogfood FP class — `exportedNames`/reference-counting are bare-text
+regexes over raw source, so an `export ...` keyword sequence that only exists as literal
+text *inside a template literal* (backtick string) was counted as a real declaration/
+reference. Reproduced against real prod source
+(`mcp/source/services/repo-quality-gate-mcp/scripts/benchmark-local.mjs`, a
+fixture-generator that builds `.ts` source via `` `export const generated${index} = ...` ``
+template literals) — code-diet flagged the generated name text as an unrequested export
+of the *script*, which never declares it. Fix: `blankTemplateLiterals()` blanks the
+literal-text portions of backtick strings (not their `${...}` interpolations, which are
+real executed code) before both the declaration regex and the reference-count corpus scan.
+Two verify-red unit tests added (declaration-in-template-literal not flagged; mention-in-
+template-literal not counted as a reference) plus one regression test written against a
+bug the fix itself introduced during verification: a naive "blank the whole backtick
+string" version blanked `${...}` interpolated calls too, which turned a genuine reference
+(`corpus_v2/clean/zod/errors.ts`'s `` `  -> at ${toDotPath(issue.path)}` ``) into a false
+"no reference" verdict, regressing v2a clean FP rate 0.100 → 0.110 (CI [0.063,0.186],
+still overlapping the 0.100 CI but a real, explainable regression, not noise). The
+interpolation-preserving fix above resolves it: **v2a clean FP rate confirmed unchanged
+at 0.100 (CI [0.055,0.174])**, identical to the pre-task-7 §5d baseline — no regression.
 
 ## 5d. Language-graph oracle integration (2026-08-05, late) — shipped + measured
 

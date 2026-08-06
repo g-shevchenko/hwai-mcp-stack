@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-06T07:49:13.291Z",
+  "generated_at": "2026-08-06T08:12:20.220Z",
   "floors": {
     "per_class_precision": 0.85,
     "per_class_recall": 0.8,
@@ -214,9 +214,6 @@
           "CD03",
           "CD03",
           "CD03",
-          "CD03",
-          "CD03",
-          "CD03",
           "CD03"
         ]
       },
@@ -319,14 +316,14 @@
       },
       "CD03": {
         "tp": 0,
-        "fp": 13,
+        "fp": 12,
         "fn": 1,
         "precision": 0,
         "recall": 0,
         "f1": 0,
         "precision_ci": {
           "lo": 0,
-          "hi": 0.22810184305529166,
+          "hi": 0.2425007574992425,
           "p": 0
         },
         "recall_ci": {

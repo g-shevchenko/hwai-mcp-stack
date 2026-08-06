@@ -96,6 +96,63 @@ function extractBracedBody(text: string, openIndex: number): string | null {
   return null;
 }
 
+// Blank out the LITERAL TEXT portions of template literals (backtick strings), replacing
+// every non-newline character with a space so string length and line numbers are unchanged.
+// CD03 (task 7, dogfood): a bare `\bexport ...\b` regex over raw text cannot tell code
+// from text a backtick string merely *contains* — reproduced against real prod files
+// (repo-quality-gate-mcp/scripts/benchmark-local.mjs) where a fixture-generator builds
+// `.ts` source via template literals; code-diet flagged the generated NAME text as an
+// unrequested export of the script, which never declares it.
+//
+// `${...}` interpolations are NOT blanked: they are real, executed JS expressions, not
+// string text (reproduced against corpus_v2/clean/zod/errors.ts's
+// `` `  -> at ${toDotPath(issue.path)}` ``, a genuine call — naively blanking the whole
+// backtick string turned that real reference into a new v2a clean FP, 0.100 -> 0.110;
+// see detectors.test.mjs "a call inside a template literal's ${...} interpolation").
+// A full parser is out of scope for a regex-based detector, so this is a conservative
+// single-level scan (matches the project's stated text-based-analysis limits): nested
+// template literals *inside* an interpolation are passed through as-is rather than
+// re-parsed, and a `}` inside a nested string/regex within an interpolation can under-count
+// brace depth in rare cases.
+function blankTemplateLiterals(text: string): string {
+  let out = "";
+  let inTemplate = false;
+  let interpDepth = 0; // >0 while inside a `${...}` interpolation (real code, left untouched)
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (inTemplate && interpDepth === 0 && ch === "\\") {
+      // escaped char inside template literal TEXT (e.g. \` or \\): blank both, don't toggle state.
+      out += " ";
+      const next = text[i + 1];
+      if (next !== undefined) {
+        out += next === "\n" ? "\n" : " ";
+        i++;
+      }
+      continue;
+    }
+    if (inTemplate && interpDepth === 0 && ch === "$" && text[i + 1] === "{") {
+      interpDepth = 1;
+      out += "${";
+      i++;
+      continue;
+    }
+    if (inTemplate && interpDepth > 0) {
+      // pass interpolated code through unchanged; it's real code and may reference exports.
+      if (ch === "{") interpDepth++;
+      else if (ch === "}") interpDepth--;
+      out += ch;
+      continue;
+    }
+    if (ch === "`" && interpDepth === 0) {
+      inTemplate = !inTemplate;
+      out += ch;
+      continue;
+    }
+    out += inTemplate && ch !== "\n" ? " " : ch;
+  }
+  return out;
+}
+
 function exportedNames(text: string): string[] {
   // CD03 measures RUNTIME references. TS type-only exports (interface / type) have no
   // runtime refs, so a text-grep always misses them -> false positive (eval v2, Category D).
@@ -103,7 +160,7 @@ function exportedNames(text: string): string[] {
   const names = new Set<string>();
   const decl = /\bexport\s+(?:default\s+)?(?:async\s+)?(function|class|const|let|var|enum)\s+([A-Za-z_$][\w$]*)/g;
   let m: RegExpExecArray | null;
-  while ((m = decl.exec(text))) names.add(m[2]);
+  while ((m = decl.exec(blankTemplateLiterals(text)))) names.add(m[2]);
   return [...names];
 }
 
@@ -148,6 +205,9 @@ export async function detectUnusedExports(
 ): Promise<Finding[]> {
   const findings: Finding[] = [];
   const corpus = allSources.length ? allSources : [text];
+  // A name that only appears as text inside a template literal elsewhere (e.g. a doc
+  // string mentioning the symbol) is not a real reference either — see blankTemplateLiterals.
+  const corpusForRefs = corpus.map(blankTemplateLiterals);
   // names made public by an entry-point barrel: `export { foo }` / `export { default as foo }`.
   const publicNames = new Set<string>();
   const barrelRe = /\bexport\s*\{([^}]*)\}\s*from\b/g;
@@ -168,7 +228,7 @@ export async function detectUnusedExports(
     if (isEntryPoint) continue; // the entry point's own exports are the API
     const ref = new RegExp(`\\b${name.replace(/[$]/g, "\\$")}\\b`, "g");
     let count = 0;
-    for (const src of corpus) count += (src.match(ref) || []).length;
+    for (const src of corpusForRefs) count += (src.match(ref) || []).length;
     // 1 occurrence = the declaration itself; >1 means referenced somewhere.
     if (count <= 1) {
       // Text-based candidate: confirm with the language-graph oracle when available.
