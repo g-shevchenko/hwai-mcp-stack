@@ -23,7 +23,26 @@ export async function buildLanguageGraphOracle(corpusRoot) {
     } catch {
       return null;
     }
+    const indexedTexts = [];
+    const seenPaths = new Set();
+    // index.files is an OBJECT keyed by path (not an array) — normalize both shapes.
+    const collections = [
+      index.files && !Array.isArray(index.files) ? Object.values(index.files) : index.files,
+      index.symbols,
+      index.references,
+    ];
+    for (const coll of collections) {
+      for (const rec of coll || []) {
+        const p = rec.path || rec.file;
+        if (p && !seenPaths.has(p)) {
+          seenPaths.add(p);
+          const abs = path.isAbsolute(p) ? p : path.join(corpusRoot, p);
+          try { indexedTexts.push(fs.readFileSync(abs, "utf8")); } catch { /* file moved */ }
+        }
+      }
+    }
     return {
+      indexedTexts,
       async hasCrossFileReference(symbolName, selfFile) {
         const refs = (index.references || []).filter((r) => r.symbol === symbolName && r.path !== selfFile);
         return refs.length > 0;

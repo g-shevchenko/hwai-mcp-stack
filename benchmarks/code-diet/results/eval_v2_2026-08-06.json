@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-06T08:12:20.220Z",
+  "generated_at": "2026-08-06T10:18:51.577Z",
   "floors": {
     "per_class_precision": 0.85,
     "per_class_recall": 0.8,
@@ -10,6 +10,7 @@
     "v2a_clean": true,
     "v2c_real_ai": true
   },
+  "cd03_contract": "verdicts on oracle-confirmed only; candidates are diagnostic (eval v2 §5e)",
   "v2b": {
     "files": 92,
     "per_class": {
@@ -65,7 +66,8 @@
           "lo": 0.7574992425007574,
           "hi": 1,
           "p": 1
-        }
+        },
+        "candidates": 0
       },
       "CD04": {
         "tp": 12,
@@ -330,7 +332,8 @@
           "lo": 0,
           "hi": 0.7934567085261071,
           "p": 0
-        }
+        },
+        "candidates": 0
       },
       "CD04": {
         "tp": 0,

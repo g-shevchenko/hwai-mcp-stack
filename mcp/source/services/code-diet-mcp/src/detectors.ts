@@ -176,6 +176,11 @@ export interface CorpusEntry {
 // analysis cannot resolve JS module reachability; the graph can.
 export interface LanguageGraphOracle {
   hasCrossFileReference(symbolName: string, selfFile: string): Promise<boolean>;
+  // Texts of the files the graph actually indexed. When present, a graph "dead"
+  // answer is only upgraded to a verdict if this corpus also shows no textual
+  // reference outside the declaration — guards against the graph indexing a
+  // partial slice where a reference exists in a file the graph never saw.
+  indexedTexts?: string[];
 }
 
 // CD03 — unrequested export: exported symbol never referenced anywhere in the corpus.
@@ -204,6 +209,14 @@ export async function detectUnusedExports(
   selfFile = "<input>",
 ): Promise<Finding[]> {
   const findings: Finding[] = [];
+  // Cross-file text reference counting and the language-graph oracle disagree in
+  // scope on partial package slices: the text corpus may be complete while the
+  // graph index only covers the slice's own files (or vice versa). When both
+  // signals are available, run text-based reference counting on the same
+  // corpus the oracle indexed so that a reference invisible to the text pass
+  // is not silently "confirmed dead" by an equally blind graph. The oracle's
+  // indexed texts are authoritative for the verdict tier; the full corpus stays
+  // for the candidate tier.
   const corpus = allSources.length ? allSources : [text];
   // A name that only appears as text inside a template literal elsewhere (e.g. a doc
   // string mentioning the symbol) is not a real reference either — see blankTemplateLiterals.
@@ -233,28 +246,41 @@ export async function detectUnusedExports(
     if (count <= 1) {
       // Text-based candidate: confirm with the language-graph oracle when available.
       // Oracle failure degrades to the conservative text-candidate mode — never
-      // escalate to a verdict on an unavailable graph.
+      // escalate to a verdict on an unavailable graph. A graph "dead" answer is
+      // upgraded to a verdict only when the graph's own indexed corpus agrees
+      // that the name has no textual reference outside its declaration —
+      // otherwise the graph is blind in exactly the same direction as the text
+      // pass (partial slice), and the finding stays a candidate.
       let oracleAnswer = null;
+      let verdictEligible = false;
       if (oracle) {
         try {
           oracleAnswer = await oracle.hasCrossFileReference(name, selfFile);
+          if (oracleAnswer === false && oracle.indexedTexts) {
+            let graphCorpusCount = 0;
+            for (const src of oracle.indexedTexts.map(blankTemplateLiterals)) {
+              graphCorpusCount += (src.match(ref) || []).length;
+            }
+            verdictEligible = graphCorpusCount <= 1;
+          } else if (oracleAnswer === false) {
+            verdictEligible = true; // oracle cannot expose its corpus; trust the graph verdict
+          }
         } catch {
           oracleAnswer = null;
         }
       }
       if (oracleAnswer === true) continue; // graph says the name is referenced cross-file — not dead.
+      const confirmed = oracleAnswer === false && verdictEligible;
       findings.push({
         id: "CD03",
         line: lineOf(text, text.indexOf(name)),
-        confidence: oracleAnswer === false ? 0.85 : 0.5,
-        message:
-          oracleAnswer === false
-            ? `Exported symbol "${name}" has no cross-file references (language-graph confirmed).`
-            : `Exported symbol "${name}" has no references in the scanned corpus (candidate — confirm with language-graph).`,
-        suggested_action:
-          oracleAnswer === false
-            ? "Un-export it (keep it module-local) or delete it. Verified with language-graph."
-            : "Confirm with language-graph find_references; then un-export (module-local) or delete. Do NOT delete on this signal alone.",
+        confidence: confirmed ? 0.85 : 0.5,
+        message: confirmed
+          ? `Exported symbol "${name}" has no cross-file references (language-graph confirmed).`
+          : `Exported symbol "${name}" has no references in the scanned corpus (candidate — confirm with language-graph).`,
+        suggested_action: confirmed
+          ? "Un-export it (keep it module-local) or delete it. Verified with language-graph."
+          : "Confirm with language-graph find_references; then un-export (module-local) or delete. Do NOT delete on this signal alone.",
       });
     }
   }

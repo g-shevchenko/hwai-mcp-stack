@@ -103,7 +103,33 @@ async function buildLanguageGraphOracle(repoRoot: string): Promise<LanguageGraph
     // Build (or load) the index for this repo root. auto_index=true creates it on first use.
     await graphModule.buildLanguageGraphIndex(lgConfig, { repo_root: repoRoot, auto_index: true });
     const indexFile = path.join(lgConfig.indexDir, `${textUtilsModule.stableHash(path.resolve(repoRoot))}.json`);
+    let indexedTexts: string[] | undefined;
+    try {
+      const raw = await fs.readFile(indexFile, "utf8");
+      const index = JSON.parse(raw);
+      const seen = new Set<string>();
+      indexedTexts = [];
+      // index.files is an OBJECT keyed by path (not an array) — normalize both shapes.
+      const collections = [
+        index.files && !Array.isArray(index.files) ? Object.values(index.files) : index.files,
+        index.symbols,
+        index.references,
+      ];
+      for (const coll of collections) {
+        for (const rec of coll || []) {
+          const p = rec.path || rec.file;
+          if (p && !seen.has(p)) {
+            seen.add(p);
+            const abs = path.isAbsolute(p) ? p : path.join(repoRoot, p);
+            try { indexedTexts.push(readFileSync(abs, "utf8")); } catch { /* file moved */ }
+          }
+        }
+      }
+    } catch {
+      indexedTexts = undefined; // cannot expose corpus; detector trusts graph verdicts directly
+    }
     return {
+      indexedTexts,
       async hasCrossFileReference(symbolName: string, selfFile: string): Promise<boolean> {
         try {
           const raw = await fs.readFile(indexFile, "utf8");

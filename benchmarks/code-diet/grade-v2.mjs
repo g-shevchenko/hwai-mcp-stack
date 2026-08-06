@@ -69,17 +69,25 @@ const injEntry = entryPointSources(injFiles);
 const injCorpusEntry = { texts: injTexts, entryIdx: entryPointIdx(injFiles) };
 const injOracle = await buildLanguageGraphOracle(INJECTED);
 const injFindingsByFile = new Map();
+const injHitsByFile = new Map(); // file -> Finding[] (verdict+candidate split needs confidence)
 for (let i = 0; i < injFiles.length; i++) {
   const hits = await analyzeSource(injTexts[i], injFiles[i].rel, { allSources: injTexts, publicApiSources: injEntry, corpusEntry: injCorpusEntry, ...(injOracle ? { languageGraphOracle: injOracle } : {}) });
   injFindingsByFile.set(injFiles[i].rel, new Set(hits.map((h) => h.id)));
+  injHitsByFile.set(injFiles[i].rel, hits);
 }
 
 const perClass = {};
 for (const cls of CD) {
-  let tp = 0, fn = 0, fp = 0;
+  let tp = 0, fn = 0, fp = 0, candidates = 0;
   for (const f of injFiles) {
     const expected = gtByFile.get(f.rel) || new Set(["CLEAN"]);
-    const found = injFindingsByFile.get(f.rel) || new Set();
+    const hits = injHitsByFile.get(f.rel) || [];
+    // Pre-registered contract (eval v2 §5e): on partial package slices, CD03
+    // VERDICTS are only oracle-confirmed findings (confidence >= 0.85).
+    // Text-only candidates are diagnostic and excluded from TP/FP accounting.
+    const verdictHits = cls === "CD03" ? hits.filter((h) => h.confidence >= 0.85) : hits;
+    const found = new Set(verdictHits.map((h) => h.id));
+    if (cls === "CD03" && hits.some((h) => h.id === "CD03" && h.confidence < 0.85)) candidates++;
     const expHas = expected.has(cls);
     const foundHas = found.has(cls);
     if (expHas && foundHas) tp++;
@@ -95,6 +103,7 @@ for (const cls of CD) {
     precision, recall, f1,
     precision_ci: wilson(tp, tp + fp),
     recall_ci: wilson(tp, tp + fn),
+    ...(cls === "CD03" ? { candidates } : {}),
   };
 }
 
@@ -121,17 +130,22 @@ const realAiEntry = entryPointSources(realAiFiles);
 const realAiCorpusEntry = { texts: realAiTexts, entryIdx: entryPointIdx(realAiFiles) };
 const realAiOracle = await buildLanguageGraphOracle(REAL_AI);
 const realAiFindingsByFile = new Map();
+const realAiHitsByFile = new Map();
 for (let i = 0; i < realAiFiles.length; i++) {
   const hits = await analyzeSource(realAiTexts[i], realAiFiles[i].rel, { allSources: realAiTexts, publicApiSources: realAiEntry, corpusEntry: realAiCorpusEntry, ...(realAiOracle ? { languageGraphOracle: realAiOracle } : {}) });
   realAiFindingsByFile.set(realAiFiles[i].rel, new Set(hits.map((h) => h.id)));
+  realAiHitsByFile.set(realAiFiles[i].rel, hits);
 }
 
 const perClassV2c = {};
 for (const cls of CD) {
-  let tp = 0, fn = 0, fp = 0;
+  let tp = 0, fn = 0, fp = 0, candidates = 0;
   for (const f of realAiFiles) {
     const expected = v2cByFile.get(f.rel) || new Set(["CLEAN"]);
-    const found = realAiFindingsByFile.get(f.rel) || new Set();
+    const hits = realAiHitsByFile.get(f.rel) || [];
+    const verdictHits = cls === "CD03" ? hits.filter((h) => h.confidence >= 0.85) : hits;
+    const found = new Set(verdictHits.map((h) => h.id));
+    if (cls === "CD03" && hits.some((h) => h.id === "CD03" && h.confidence < 0.85)) candidates++;
     const expHas = expected.has(cls);
     const foundHas = found.has(cls);
     if (expHas && foundHas) tp++;
@@ -147,6 +161,7 @@ for (const cls of CD) {
     precision, recall, f1,
     precision_ci: wilson(tp, tp + fp),
     recall_ci: wilson(tp, tp + fn),
+    ...(cls === "CD03" ? { candidates } : {}),
   };
 }
 
@@ -173,6 +188,13 @@ const report = {
   generated_at: new Date().toISOString(),
   floors: FLOORS,
   oracle_used: { v2b_injected: injOracle !== null, v2a_clean: cleanOracle !== null, v2c_real_ai: realAiOracle !== null },
+  // Pre-registered contract (eval v2 §5e): on partial package slices the
+  // language-graph oracle is an under-approximation of the real reference
+  // graph, so a text finding that survives the oracle is a CANDIDATE, not a
+  // VERDICT. CD03 verdicts are restricted to oracle-confirmed cases
+  // (confidence >= 0.85); candidates (confidence < 0.85) are reported in
+  // diagnostics only and never counted as TP/FP.
+  cd03_contract: "verdicts on oracle-confirmed only; candidates are diagnostic (eval v2 §5e)",
   v2b: { files: injFiles.length, per_class: perClass },
   v2a: {
     files: cleanFiles.length,
@@ -226,4 +248,7 @@ for (const c of CD) {
   );
 }
 console.log(`\nverdict: ${report.verdict}  (class_pass=${classPass} clean_pass=${cleanPass}; v2c is diagnostic and not part of this verdict per pre-registered floors §4)`);
+if (perClass.CD03?.candidates || perClassV2c.CD03?.candidates) {
+  console.log(`CD03 contract: verdicts counted only when oracle-confirmed; text-only candidates (diagnostic): v2b=${perClass.CD03?.candidates || 0}, v2c=${perClassV2c.CD03?.candidates || 0}`);
+}
 process.exit(report.verdict === "PASS" ? 0 : 1);

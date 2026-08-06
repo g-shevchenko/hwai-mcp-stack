@@ -147,6 +147,7 @@ test("CD03 oracle: a text-candidate with a graph-confirmed cross-file ref is NOT
 test("CD03 oracle: a text-candidate with NO graph refs IS flagged (high confidence)", async () => {
   const lib = `export function dead() { return 1; }\n`;
   const oracle = {
+    indexedTexts: [lib],
     async hasCrossFileReference(_symbolName, _selfFile) {
       return false; // graph confirms zero cross-file refs
     },
@@ -161,6 +162,54 @@ test("CD03 oracle: a text-candidate with NO graph refs IS flagged (high confiden
   assert.ok(
     cd03[0].message.includes("language-graph"),
     `oracle-confirmed finding should cite language-graph, got "${cd03[0].message}"`,
+  );
+});
+
+// eval v2 §5e: the graph oracle can index a partial slice. A name referenced in a
+// file the graph never saw must NOT be upgraded to a verdict, even when the graph
+// reports zero cross-file refs — the graph is blind in the same direction as the
+// text pass. The finding stays a candidate (low confidence).
+// eval v2 §5e: the graph oracle can index a partial slice. When the oracle exposes
+// its indexed corpus, a graph "dead" answer is only upgraded to a verdict if that
+// corpus textually agrees (name appears only at its declaration). If the oracle
+// exposes no indexed corpus (older adapters), the graph verdict is trusted as-is.
+test("CD03 oracle: graph 'dead' + indexed corpus AGREES (name only declared) => verdict (0.85)", async () => {
+  const lib = `export function dead2() { return 1; }\n`;
+  const oracle = {
+    indexedTexts: [lib], // indexed corpus agrees: only the declaration
+    async hasCrossFileReference(_symbolName, _selfFile) {
+      return false;
+    },
+  };
+  const findings = await analyzeSource(lib, "lib.ts", {
+    allSources: [lib],
+    languageGraphOracle: oracle,
+  });
+  const cd03 = findings.filter((f) => f.id === "CD03");
+  assert.ok(cd03[0].confidence >= 0.85, `fully-confirmed dead export must be a verdict, got ${cd03[0].confidence}`);
+});
+
+test("CD03 oracle: graph 'dead' + indexed corpus DISAGREES (name referenced) => candidate (0.5)", async () => {
+  const lib = `export function helper() { return 1; }\n`;
+  const consumer = `export const x = helper();\n`;
+  const oracle = {
+    // Graph claims no cross-file refs, but its own indexed corpus shows the name
+    // referenced in consumer.ts — a contradiction (stale/partial index). The text
+    // signal must veto the verdict upgrade.
+    indexedTexts: [lib, consumer],
+    async hasCrossFileReference(_symbolName, _selfFile) {
+      return false;
+    },
+  };
+  const findings = await analyzeSource(lib, "lib.ts", {
+    allSources: [lib], // main corpus is partial — count stays 1, text-candidate reached
+    languageGraphOracle: oracle,
+  });
+  const cd03 = findings.filter((f) => f.id === "CD03");
+  assert.ok(cd03.length >= 1, "finding should still be reported as a candidate");
+  assert.ok(
+    cd03[0].confidence < 0.85,
+    `contradicted graph 'dead' must NOT become a verdict, got confidence ${cd03[0].confidence}`,
   );
 });
 
