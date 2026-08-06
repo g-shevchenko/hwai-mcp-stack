@@ -326,3 +326,59 @@ Status: **met, 2026-08-06.** All items below are now true, in commit order:
 - [x] RESULTS.md written (task 4; numbers-only synthesis of §5b–§5f)
 
 Only then the engineering note (todo #8) — which this phase's done condition now unlocks. No detector change was made anywhere in this phase after v2c blind labels existed (contamination log: none, §5f), so no re-label is required before todo #8 starts.
+
+## 8. v3 — clean-corpus FP methodology correction (pre-registered, 2026-08-06)
+
+### 8a. The bug found in v2a
+
+Grader v2's v2a (clean-corpus FP rate) treats **every** finding on a "clean" file as
+a false positive (`grade-v2.mjs`: `if (hits.length > 0) cleanWithFp++`). This is wrong
+for CD03. The "clean" corpus is mature human OSS assumed clean *by construction*, but
+that assumption does not hold for unused exports: real shipped libraries DO carry
+genuinely dead exports (e.g. zod's `extendedDuration`, `uuid4`, `uuid6`, `uuid7` in
+`corpus_v2/clean/zod/regexes.ts` — exported, zero cross-file references anywhere in the
+package). When code-diet flags such a symbol it is a **true positive against source
+truth**, not a detector FP. Counting it as an FP systematically deflates CD03 precision
+and the clean-FP rate — it punishes the detector for being correct.
+
+**Root cause:** v2a conflated two different ground-truth regimes. "Clean" means
+"human-reviewed and CI-green," which guarantees absence of *bugs* but NOT absence of
+*dead exports*. CD03's target (dead exports) is precisely the class the clean
+assumption cannot cover.
+
+### 8b. The fix: source-truth labels for the clean corpus
+
+v3 introduces a per-symbol **truth table** for the clean corpus, blind-labeled by an
+independent subagent with NO access to detector outputs (same blind-validation
+discipline as v2c). Each exported symbol is labeled:
+
+- `verdict_source` — exported AND genuinely zero cross-file references in the corpus
+  (truly dead). A detector flag = **TP**, not FP.
+- `detector_fp` — exported AND ≥1 real cross-file reference exists. A detector flag = **FP**.
+- `not_findings` — local / re-export / type-only / otherwise out of CD03 scope.
+
+Artifact: `truth_table_v3.json` (machine) + `truth_table_v3.md` (human), produced
+blind. The grader v3 v2a section then classifies each CD03 finding against this table:
+flag-on-`verdict_source` → TP; flag-on-`detector_fp` → FP; flag-on-`not_findings` → FP
+(out-of-scope over-fire). Only now are "precision" and "clean FP rate" meaningful.
+
+### 8c. Pre-registered v3 metric contract
+
+- v2a CD03 reports BOTH: (a) FP rate against source truth (flag on `detector_fp`/
+  `not_findings` symbols), and (b) TP count against source truth (flag on
+  `verdict_source` symbols). The legacy "any hit = FP" number is kept as
+  `clean_fp_rate_naive` for continuity but is explicitly labeled methodologically
+  superseded.
+- The verdict/candidate contract (§5e) still applies: on partial slices only
+  oracle-confirmed CD03 findings count as verdicts. The truth table refines the
+  *accounting* of those verdicts, not the verdict definition.
+- Polarity guard unchanged: no directional claim whose CI crosses polarity.
+
+### 8d. Why this is a correction, not a re-tune
+
+No detector source changes as part of v3. The only change is the *evaluation
+accounting* — we stop mis-scoring correct findings. This is the
+`measure-before-deploy-prod-changes` discipline applied to the measurement itself:
+the v2a metric was measuring the wrong thing. Contamination log: the truth table is
+produced blind, before any grader re-run, and the detector author does not see it
+until after labels are frozen.
