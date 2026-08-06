@@ -1,0 +1,1529 @@
+{
+  "corpus": "v3",
+  "labeled_at": "2026-08-06",
+  "protocol": "LABELING_PROTOCOL.md (deterministic labeler — subagent provider down; mechanical reference counting)",
+  "labeler": "label_truth_table.mjs",
+  "files": {
+    "commander/argument.js": {
+      "verdict_source": [],
+      "detector_fp": [
+        "Argument",
+        "humanReadableArgName"
+      ],
+      "not_findings": []
+    },
+    "commander/command.js": {
+      "verdict_source": [
+        "Command",
+        "useColor"
+      ],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "commander/error.js": {
+      "verdict_source": [],
+      "detector_fp": [
+        "CommanderError",
+        "InvalidArgumentError"
+      ],
+      "not_findings": []
+    },
+    "commander/help.js": {
+      "verdict_source": [],
+      "detector_fp": [
+        "Help"
+      ],
+      "not_findings": []
+    },
+    "commander/option.js": {
+      "verdict_source": [],
+      "detector_fp": [
+        "Option",
+        "DualOptions"
+      ],
+      "not_findings": []
+    },
+    "commander/suggestSimilar.js": {
+      "verdict_source": [],
+      "detector_fp": [
+        "suggestSimilar"
+      ],
+      "not_findings": []
+    },
+    "express/application.js": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "express/express.js": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "express/request.js": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "express/response.js": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "express/utils.js": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "express/view.js": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "hwai-language-graph/artifact-store.ts": {
+      "verdict_source": [],
+      "detector_fp": [
+        "artifactFileName",
+        "writeArtifact",
+        "readArtifact"
+      ],
+      "not_findings": []
+    },
+    "hwai-language-graph/config.ts": {
+      "verdict_source": [],
+      "detector_fp": [
+        "LANGUAGE_GRAPH_SCHEMA_VERSION",
+        "LANGUAGE_GRAPH_MEASUREMENT_SCHEMA_VERSION",
+        "LANGUAGE_GRAPH_PIPELINE_VERSION",
+        "getLanguageGraphConfig"
+      ],
+      "not_findings": [
+        "LanguageGraphConfig"
+      ]
+    },
+    "hwai-language-graph/graph.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": [
+        "GraphFile",
+        "GraphSymbol",
+        "GraphImport",
+        "GraphReference",
+        "LanguageGraphIndex"
+      ]
+    },
+    "hwai-language-graph/index.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "hwai-language-graph/measurement.ts": {
+      "verdict_source": [],
+      "detector_fp": [
+        "buildMeasurementReport"
+      ],
+      "not_findings": [
+        "MeasurementWindowOptions"
+      ]
+    },
+    "hwai-language-graph/request-log.ts": {
+      "verdict_source": [],
+      "detector_fp": [
+        "appendRequestLog"
+      ],
+      "not_findings": [
+        "RequestLogEvent"
+      ]
+    },
+    "hwai-language-graph/text-utils.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "hwai-repo-hygiene/artifact-store.ts": {
+      "verdict_source": [],
+      "detector_fp": [
+        "artifactFileName",
+        "writeJsonArtifact",
+        "readArtifact"
+      ],
+      "not_findings": []
+    },
+    "hwai-repo-hygiene/config.ts": {
+      "verdict_source": [],
+      "detector_fp": [
+        "REPO_HYGIENE_SCHEMA_VERSION",
+        "REPO_HYGIENE_MEASUREMENT_SCHEMA_VERSION",
+        "REPO_HYGIENE_PIPELINE_VERSION",
+        "getRepoHygieneConfig"
+      ],
+      "not_findings": [
+        "RepoHygieneConfig"
+      ]
+    },
+    "hwai-repo-hygiene/hygiene.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": [
+        "HygieneArgs"
+      ]
+    },
+    "hwai-repo-hygiene/index.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "hwai-repo-hygiene/measurement.ts": {
+      "verdict_source": [],
+      "detector_fp": [
+        "buildMeasurementReport"
+      ],
+      "not_findings": []
+    },
+    "hwai-repo-hygiene/module-depth.ts": {
+      "verdict_source": [
+        "scoreModule",
+        "compareDepth"
+      ],
+      "detector_fp": [
+        "scoreModuleDepth"
+      ],
+      "not_findings": [
+        "DepthLang",
+        "DepthBand",
+        "ModuleDepthScore",
+        "ModuleDepthCompare",
+        "ModuleDepthArgs"
+      ]
+    },
+    "hwai-repo-hygiene/request-log.ts": {
+      "verdict_source": [],
+      "detector_fp": [
+        "appendRequestLog"
+      ],
+      "not_findings": [
+        "RequestLogEvent"
+      ]
+    },
+    "hwai-repo-hygiene/text-utils.ts": {
+      "verdict_source": [],
+      "detector_fp": [
+        "stableHash",
+        "clampText",
+        "estimateTokens",
+        "round",
+        "redactSecrets"
+      ],
+      "not_findings": []
+    },
+    "zod/api.ts": {
+      "verdict_source": [
+        "_slugify",
+        "_array",
+        "_union",
+        "_xor",
+        "_discriminatedUnion",
+        "_intersection",
+        "_tuple",
+        "_record",
+        "_set",
+        "_nativeEnum",
+        "_literal",
+        "_transform",
+        "_optional",
+        "_nullable",
+        "_nonoptional",
+        "_success",
+        "_pipe",
+        "_readonly",
+        "_templateLiteral",
+        "_promise",
+        "_check"
+      ],
+      "detector_fp": [
+        "_string",
+        "_coercedString",
+        "_email",
+        "_guid",
+        "_uuid",
+        "_uuidv4",
+        "_uuidv6",
+        "_uuidv7",
+        "_url",
+        "_emoji",
+        "_nanoid",
+        "_cuid",
+        "_cuid2",
+        "_ulid",
+        "_xid",
+        "_ksuid",
+        "_ipv4",
+        "_ipv6",
+        "_mac",
+        "_cidrv4",
+        "_cidrv6",
+        "_base64",
+        "_base64url",
+        "_e164",
+        "_jwt",
+        "TimePrecision",
+        "_isoDateTime",
+        "_isoDate",
+        "_isoTime",
+        "_isoDuration",
+        "_number",
+        "_coercedNumber",
+        "_int",
+        "_float32",
+        "_float64",
+        "_int32",
+        "_uint32",
+        "_boolean",
+        "_coercedBoolean",
+        "_bigint",
+        "_coercedBigint",
+        "_int64",
+        "_uint64",
+        "_symbol",
+        "_undefined",
+        "_null",
+        "_any",
+        "_unknown",
+        "_never",
+        "_void",
+        "_date",
+        "_coercedDate",
+        "_nan",
+        "_lt",
+        "_lte",
+        "_gt",
+        "_gte",
+        "_positive",
+        "_negative",
+        "_nonpositive",
+        "_nonnegative",
+        "_multipleOf",
+        "_maxSize",
+        "_minSize",
+        "_size",
+        "_maxLength",
+        "_minLength",
+        "_length",
+        "_regex",
+        "_lowercase",
+        "_uppercase",
+        "_includes",
+        "_startsWith",
+        "_endsWith",
+        "_property",
+        "_mime",
+        "_overwrite",
+        "_normalize",
+        "_trim",
+        "_toLowerCase",
+        "_toUpperCase",
+        "_map",
+        "_enum",
+        "_file",
+        "_default",
+        "_catch",
+        "_lazy",
+        "_custom",
+        "_refine",
+        "_superRefine",
+        "describe",
+        "meta",
+        "_stringbool",
+        "_stringFormat"
+      ],
+      "not_findings": [
+        "Params",
+        "TypeParams",
+        "CheckParams",
+        "StringFormatParams",
+        "CheckStringFormatParams",
+        "CheckTypeParams",
+        "$ZodStringParams",
+        "$ZodStringFormatParams",
+        "$ZodCheckStringFormatParams",
+        "$ZodEmailParams",
+        "$ZodCheckEmailParams",
+        "$ZodGUIDParams",
+        "$ZodCheckGUIDParams",
+        "$ZodUUIDParams",
+        "$ZodCheckUUIDParams",
+        "$ZodUUIDv4Params",
+        "$ZodCheckUUIDv4Params",
+        "$ZodUUIDv6Params",
+        "$ZodCheckUUIDv6Params",
+        "$ZodUUIDv7Params",
+        "$ZodCheckUUIDv7Params",
+        "$ZodURLParams",
+        "$ZodCheckURLParams",
+        "$ZodEmojiParams",
+        "$ZodCheckEmojiParams",
+        "$ZodNanoIDParams",
+        "$ZodCheckNanoIDParams",
+        "$ZodCUIDParams",
+        "$ZodCheckCUIDParams",
+        "$ZodCUID2Params",
+        "$ZodCheckCUID2Params",
+        "$ZodULIDParams",
+        "$ZodCheckULIDParams",
+        "$ZodXIDParams",
+        "$ZodCheckXIDParams",
+        "$ZodKSUIDParams",
+        "$ZodCheckKSUIDParams",
+        "$ZodIPv4Params",
+        "$ZodCheckIPv4Params",
+        "$ZodIPv6Params",
+        "$ZodCheckIPv6Params",
+        "$ZodMACParams",
+        "$ZodCheckMACParams",
+        "$ZodCIDRv4Params",
+        "$ZodCheckCIDRv4Params",
+        "$ZodCIDRv6Params",
+        "$ZodCheckCIDRv6Params",
+        "$ZodBase64Params",
+        "$ZodCheckBase64Params",
+        "$ZodBase64URLParams",
+        "$ZodCheckBase64URLParams",
+        "$ZodE164Params",
+        "$ZodCheckE164Params",
+        "$ZodJWTParams",
+        "$ZodCheckJWTParams",
+        "$ZodISODateTimeParams",
+        "$ZodCheckISODateTimeParams",
+        "$ZodISODateParams",
+        "$ZodCheckISODateParams",
+        "$ZodISOTimeParams",
+        "$ZodCheckISOTimeParams",
+        "$ZodISODurationParams",
+        "$ZodCheckISODurationParams",
+        "$ZodNumberParams",
+        "$ZodNumberFormatParams",
+        "$ZodCheckNumberFormatParams",
+        "$ZodBooleanParams",
+        "$ZodBigIntParams",
+        "$ZodBigIntFormatParams",
+        "$ZodCheckBigIntFormatParams",
+        "$ZodSymbolParams",
+        "$ZodUndefinedParams",
+        "$ZodNullParams",
+        "$ZodAnyParams",
+        "$ZodUnknownParams",
+        "$ZodNeverParams",
+        "$ZodVoidParams",
+        "$ZodDateParams",
+        "$ZodNaNParams",
+        "$ZodCheckLessThanParams",
+        "$ZodCheckGreaterThanParams",
+        "$ZodCheckMultipleOfParams",
+        "$ZodCheckMaxSizeParams",
+        "$ZodCheckMinSizeParams",
+        "$ZodCheckSizeEqualsParams",
+        "$ZodCheckMaxLengthParams",
+        "$ZodCheckMinLengthParams",
+        "$ZodCheckLengthEqualsParams",
+        "$ZodCheckRegexParams",
+        "$ZodCheckLowerCaseParams",
+        "$ZodCheckUpperCaseParams",
+        "$ZodCheckIncludesParams",
+        "$ZodCheckStartsWithParams",
+        "$ZodCheckEndsWithParams",
+        "$ZodCheckPropertyParams",
+        "$ZodCheckMimeTypeParams",
+        "$ZodArrayParams",
+        "$ZodObjectParams",
+        "$ZodUnionParams",
+        "$ZodXorParams",
+        "$ZodTypeDiscriminableInternals",
+        "$ZodTypeDiscriminable",
+        "$ZodDiscriminatedUnionParams",
+        "$ZodIntersectionParams",
+        "$ZodTupleParams",
+        "$ZodRecordParams",
+        "$ZodMapParams",
+        "$ZodSetParams",
+        "$ZodEnumParams",
+        "$ZodLiteralParams",
+        "$ZodFileParams",
+        "$ZodTransformParams",
+        "$ZodOptionalParams",
+        "$ZodNullableParams",
+        "$ZodDefaultParams",
+        "$ZodNonOptionalParams",
+        "$ZodSuccessParams",
+        "$ZodCatchParams",
+        "$ZodPipeParams",
+        "$ZodReadonlyParams",
+        "$ZodTemplateLiteralParams",
+        "$ZodLazyParams",
+        "$ZodPromiseParams",
+        "$ZodCustomParams",
+        "$ZodSuperRefineIssue",
+        "$RefinementCtx",
+        "$ZodSuperRefineParams",
+        "$ZodStringBoolParams"
+      ]
+    },
+    "zod/ar.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/az.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/be.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/bg.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/ca.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/checks.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/coerce.ts": {
+      "verdict_source": [],
+      "detector_fp": [
+        "string",
+        "number",
+        "boolean",
+        "bigint",
+        "date"
+      ],
+      "not_findings": []
+    },
+    "zod/compat.ts": {
+      "verdict_source": [
+        "setErrorMap",
+        "getErrorMap",
+        "ZodFirstPartyTypeKind"
+      ],
+      "detector_fp": [
+        "ZodIssueCode"
+      ],
+      "not_findings": [
+        "inferFlattenedErrors",
+        "inferFormattedError",
+        "BRAND",
+        "ZodRawShape"
+      ]
+    },
+    "zod/config.ts": {
+      "verdict_source": [],
+      "detector_fp": [
+        "globalConfig",
+        "config"
+      ],
+      "not_findings": [
+        "$ZodConfig"
+      ]
+    },
+    "zod/core.ts": {
+      "verdict_source": [
+        "$constructor",
+        "$brand",
+        "$ZodAsyncError",
+        "$ZodEncodeError"
+      ],
+      "detector_fp": [
+        "NEVER",
+        "globalConfig",
+        "config"
+      ],
+      "not_findings": [
+        "$constructor",
+        "$brand",
+        "$ZodBranded",
+        "$ZodNarrow",
+        "input",
+        "output",
+        "$ZodConfig"
+      ]
+    },
+    "zod/cs.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/da.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/de.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/doc.ts": {
+      "verdict_source": [
+        "Doc"
+      ],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/el.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/en.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/eo.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/errors.ts": {
+      "verdict_source": [
+        "$ZodError",
+        "$ZodRealError",
+        "toDotPath"
+      ],
+      "detector_fp": [
+        "flattenError",
+        "formatError",
+        "treeifyError",
+        "prettifyError"
+      ],
+      "not_findings": [
+        "$ZodIssueBase",
+        "$ZodInvalidTypeExpected",
+        "$ZodIssueInvalidType",
+        "$ZodIssueTooBig",
+        "$ZodIssueTooSmall",
+        "$ZodIssueInvalidStringFormat",
+        "$ZodIssueNotMultipleOf",
+        "$ZodIssueUnrecognizedKeys",
+        "$ZodIssueInvalidUnion",
+        "$ZodIssueInvalidKey",
+        "$ZodIssueInvalidElement",
+        "$ZodIssueInvalidValue",
+        "$ZodIssueCustom",
+        "$ZodIssueStringCommonFormats",
+        "$ZodIssueStringInvalidRegex",
+        "$ZodIssueStringInvalidJWT",
+        "$ZodIssueStringStartsWith",
+        "$ZodIssueStringEndsWith",
+        "$ZodIssueStringIncludes",
+        "$ZodStringFormatIssues",
+        "$ZodIssue",
+        "$ZodIssueCode",
+        "$ZodInternalIssue",
+        "$ZodRawIssue",
+        "$ZodErrorMap",
+        "$ZodError",
+        "$ZodFlattenedError",
+        "$ZodFormattedError",
+        "$ZodErrorTree"
+      ]
+    },
+    "zod/es.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/external.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/fa.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/fi.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/fr-CA.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/fr.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/from-json-schema.ts": {
+      "verdict_source": [
+        "fromJSONSchema"
+      ],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/he.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/hr.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/hu.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/hy.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/id.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/index.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/is.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/iso.ts": {
+      "verdict_source": [],
+      "detector_fp": [
+        "ZodMiniISODateTime",
+        "datetime",
+        "ZodMiniISODate",
+        "date",
+        "ZodMiniISOTime",
+        "time",
+        "ZodMiniISODuration",
+        "duration"
+      ],
+      "not_findings": [
+        "ZodMiniISODateTime",
+        "ZodMiniISODate",
+        "ZodMiniISOTime",
+        "ZodMiniISODuration"
+      ]
+    },
+    "zod/it.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/ja.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/json-schema-generator.ts": {
+      "verdict_source": [
+        "JSONSchemaGenerator"
+      ],
+      "detector_fp": [],
+      "not_findings": [
+        "EmitParams"
+      ]
+    },
+    "zod/json-schema-processors.ts": {
+      "verdict_source": [
+        "stringProcessor",
+        "numberProcessor",
+        "booleanProcessor",
+        "bigintProcessor",
+        "symbolProcessor",
+        "nullProcessor",
+        "undefinedProcessor",
+        "voidProcessor",
+        "neverProcessor",
+        "anyProcessor",
+        "unknownProcessor",
+        "dateProcessor",
+        "enumProcessor",
+        "literalProcessor",
+        "nanProcessor",
+        "templateLiteralProcessor",
+        "fileProcessor",
+        "successProcessor",
+        "customProcessor",
+        "functionProcessor",
+        "transformProcessor",
+        "mapProcessor",
+        "setProcessor",
+        "arrayProcessor",
+        "objectProcessor",
+        "unionProcessor",
+        "intersectionProcessor",
+        "tupleProcessor",
+        "recordProcessor",
+        "nullableProcessor",
+        "nonoptionalProcessor",
+        "defaultProcessor",
+        "prefaultProcessor",
+        "catchProcessor",
+        "pipeProcessor",
+        "readonlyProcessor",
+        "promiseProcessor",
+        "optionalProcessor",
+        "lazyProcessor"
+      ],
+      "detector_fp": [
+        "allProcessors",
+        "toJSONSchema"
+      ],
+      "not_findings": []
+    },
+    "zod/json-schema.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": [
+        "Schema",
+        "_JSONSchema",
+        "JSONSchema",
+        "BaseSchema",
+        "ObjectSchema",
+        "ArraySchema",
+        "StringSchema",
+        "NumberSchema",
+        "IntegerSchema",
+        "BooleanSchema",
+        "NullSchema"
+      ]
+    },
+    "zod/ka.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/km.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/ko.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/lt.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/mk.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/ms.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/nl.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/no.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/ota.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/parse.ts": {
+      "verdict_source": [
+        "_parse",
+        "_parseAsync",
+        "_safeParse",
+        "_safeParseAsync",
+        "_encode",
+        "_decode",
+        "_encodeAsync",
+        "encodeAsync",
+        "_decodeAsync",
+        "decodeAsync",
+        "_safeEncode",
+        "safeEncode",
+        "_safeDecode",
+        "safeDecode",
+        "_safeEncodeAsync",
+        "safeEncodeAsync",
+        "_safeDecodeAsync",
+        "safeDecodeAsync"
+      ],
+      "detector_fp": [
+        "parse",
+        "parseAsync",
+        "safeParse",
+        "safeParseAsync",
+        "encode",
+        "decode"
+      ],
+      "not_findings": [
+        "$ZodErrorClass",
+        "$Parse",
+        "$ParseAsync",
+        "$SafeParse",
+        "$SafeParseAsync",
+        "$Encode",
+        "$Decode",
+        "$EncodeAsync",
+        "$DecodeAsync",
+        "$SafeEncode",
+        "$SafeDecode",
+        "$SafeEncodeAsync",
+        "$SafeDecodeAsync"
+      ]
+    },
+    "zod/pl.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/ps.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/pt.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/regexes.ts": {
+      "verdict_source": [
+        "extendedDuration",
+        "uuid4",
+        "uuid6",
+        "uuid7",
+        "integer",
+        "md5_hex",
+        "md5_base64",
+        "md5_base64url",
+        "sha1_hex",
+        "sha1_base64",
+        "sha1_base64url",
+        "sha256_hex",
+        "sha256_base64",
+        "sha256_base64url",
+        "sha384_hex",
+        "sha384_base64",
+        "sha384_base64url",
+        "sha512_hex",
+        "sha512_base64",
+        "sha512_base64url"
+      ],
+      "detector_fp": [
+        "cuid",
+        "cuid2",
+        "ulid",
+        "xid",
+        "ksuid",
+        "nanoid",
+        "duration",
+        "guid",
+        "uuid",
+        "email",
+        "emoji",
+        "ipv4",
+        "ipv6",
+        "mac",
+        "cidrv4",
+        "cidrv6",
+        "base64",
+        "base64url",
+        "hostname",
+        "domain",
+        "httpProtocol",
+        "e164",
+        "date",
+        "time",
+        "datetime",
+        "string",
+        "bigint",
+        "number",
+        "boolean",
+        "lowercase",
+        "uppercase",
+        "hex"
+      ],
+      "not_findings": []
+    },
+    "zod/registries.ts": {
+      "verdict_source": [
+        "$output",
+        "$input",
+        "$ZodRegistry"
+      ],
+      "detector_fp": [
+        "registry",
+        "globalRegistry"
+      ],
+      "not_findings": [
+        "$output",
+        "$input",
+        "$replace",
+        "JSONSchemaMeta",
+        "GlobalMeta"
+      ]
+    },
+    "zod/ro.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/ru.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/schemas.ts": {
+      "verdict_source": [
+        "ZodMiniType",
+        "ZodMiniEmail",
+        "ZodMiniGUID",
+        "ZodMiniUUID",
+        "uuidv7",
+        "ZodMiniURL",
+        "httpUrl",
+        "ZodMiniEmoji",
+        "ZodMiniNanoID",
+        "ZodMiniCUID",
+        "ZodMiniCUID2",
+        "ZodMiniULID",
+        "ZodMiniXID",
+        "ZodMiniKSUID",
+        "ZodMiniIPv4",
+        "ZodMiniIPv6",
+        "ZodMiniCIDRv4",
+        "ZodMiniCIDRv6",
+        "ZodMiniMAC",
+        "ZodMiniBase64",
+        "ZodMiniBase64URL",
+        "ZodMiniE164",
+        "ZodMiniJWT",
+        "ZodMiniCustomStringFormat",
+        "stringFormat",
+        "hash",
+        "ZodMiniNumberFormat",
+        "ZodMiniBigIntFormat",
+        "ZodMiniSymbol",
+        "ZodMiniUndefined",
+        "ZodMiniNull",
+        "ZodMiniAny",
+        "ZodMiniUnknown",
+        "ZodMiniNever",
+        "ZodMiniVoid",
+        "ZodMiniArray",
+        "ZodMiniObject",
+        "strictObject",
+        "looseObject",
+        "ZodMiniUnion",
+        "ZodMiniXor",
+        "ZodMiniDiscriminatedUnion",
+        "discriminatedUnion",
+        "ZodMiniIntersection",
+        "ZodMiniTuple",
+        "ZodMiniRecord",
+        "partialRecord",
+        "ZodMiniMap",
+        "ZodMiniSet",
+        "ZodMiniEnum",
+        "nativeEnum",
+        "ZodMiniLiteral",
+        "ZodMiniFile",
+        "ZodMiniTransform",
+        "ZodMiniOptional",
+        "ZodMiniExactOptional",
+        "exactOptional",
+        "ZodMiniNullable",
+        "ZodMiniDefault",
+        "ZodMiniPrefault",
+        "ZodMiniNonOptional",
+        "ZodMiniSuccess",
+        "ZodMiniCatch",
+        "ZodMiniNaN",
+        "ZodMiniPipe",
+        "ZodMiniCodec",
+        "invertCodec",
+        "ZodMiniReadonly",
+        "ZodMiniTemplateLiteral",
+        "templateLiteral",
+        "ZodMiniLazy",
+        "ZodMiniPromise",
+        "ZodMiniCustom",
+        "refine",
+        "superRefine",
+        "stringbool",
+        "ZodMiniFunction",
+        "_function"
+      ],
+      "detector_fp": [
+        "ZodMiniString",
+        "string",
+        "ZodMiniStringFormat",
+        "email",
+        "guid",
+        "uuid",
+        "uuidv4",
+        "uuidv6",
+        "url",
+        "emoji",
+        "nanoid",
+        "cuid",
+        "cuid2",
+        "ulid",
+        "xid",
+        "ksuid",
+        "ipv4",
+        "ipv6",
+        "cidrv4",
+        "cidrv6",
+        "mac",
+        "base64",
+        "base64url",
+        "e164",
+        "jwt",
+        "hostname",
+        "hex",
+        "ZodMiniNumber",
+        "number",
+        "int",
+        "float32",
+        "float64",
+        "int32",
+        "uint32",
+        "ZodMiniBoolean",
+        "boolean",
+        "ZodMiniBigInt",
+        "bigint",
+        "int64",
+        "uint64",
+        "symbol",
+        "any",
+        "unknown",
+        "never",
+        "ZodMiniDate",
+        "date",
+        "array",
+        "keyof",
+        "object",
+        "extend",
+        "safeExtend",
+        "merge",
+        "pick",
+        "omit",
+        "partial",
+        "required",
+        "catchall",
+        "union",
+        "xor",
+        "intersection",
+        "tuple",
+        "record",
+        "looseRecord",
+        "map",
+        "set",
+        "literal",
+        "file",
+        "transform",
+        "optional",
+        "nullable",
+        "nullish",
+        "_default",
+        "prefault",
+        "nonoptional",
+        "success",
+        "nan",
+        "pipe",
+        "codec",
+        "readonly",
+        "promise",
+        "check",
+        "custom",
+        "describe",
+        "meta",
+        "json"
+      ],
+      "not_findings": [
+        "ZodMiniType",
+        "_ZodMiniString",
+        "ZodMiniString",
+        "ZodMiniStringFormat",
+        "ZodMiniEmail",
+        "ZodMiniGUID",
+        "ZodMiniUUID",
+        "ZodMiniURL",
+        "ZodMiniEmoji",
+        "ZodMiniNanoID",
+        "ZodMiniCUID",
+        "ZodMiniCUID2",
+        "ZodMiniULID",
+        "ZodMiniXID",
+        "ZodMiniKSUID",
+        "ZodMiniIPv4",
+        "ZodMiniIPv6",
+        "ZodMiniCIDRv4",
+        "ZodMiniCIDRv6",
+        "ZodMiniMAC",
+        "ZodMiniBase64",
+        "ZodMiniBase64URL",
+        "ZodMiniE164",
+        "ZodMiniJWT",
+        "ZodMiniCustomStringFormat",
+        "ZodMiniNumber",
+        "ZodMiniNumberFormat",
+        "ZodMiniBoolean",
+        "ZodMiniBigInt",
+        "ZodMiniBigIntFormat",
+        "ZodMiniSymbol",
+        "ZodMiniUndefined",
+        "ZodMiniNull",
+        "ZodMiniAny",
+        "ZodMiniUnknown",
+        "ZodMiniNever",
+        "ZodMiniVoid",
+        "ZodMiniDate",
+        "ZodMiniArray",
+        "ZodMiniObject",
+        "SafeExtendShape",
+        "RequiredInterfaceShape",
+        "ZodMiniUnion",
+        "ZodMiniXor",
+        "ZodMiniDiscriminatedUnion",
+        "ZodMiniIntersection",
+        "ZodMiniTuple",
+        "ZodMiniRecord",
+        "ZodMiniMap",
+        "ZodMiniSet",
+        "ZodMiniEnum",
+        "ZodMiniLiteral",
+        "ZodMiniFile",
+        "ZodMiniTransform",
+        "ZodMiniOptional",
+        "ZodMiniExactOptional",
+        "ZodMiniNullable",
+        "ZodMiniDefault",
+        "ZodMiniPrefault",
+        "ZodMiniNonOptional",
+        "ZodMiniSuccess",
+        "ZodMiniCatch",
+        "ZodMiniNaN",
+        "ZodMiniPipe",
+        "ZodMiniCodec",
+        "ZodMiniReadonly",
+        "ZodMiniTemplateLiteral",
+        "ZodMiniLazy",
+        "ZodMiniPromise",
+        "ZodMiniCustom",
+        "_ZodMiniJSONSchema",
+        "_ZodMiniJSONSchemaInternals",
+        "ZodMiniJSONSchemaInternals",
+        "ZodMiniJSONSchema",
+        "ZodMiniFunction"
+      ]
+    },
+    "zod/sl.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/standard-schema.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": [
+        "StandardTypedV1",
+        "Props",
+        "Types",
+        "InferInput",
+        "InferOutput",
+        "StandardSchemaV1",
+        "Props",
+        "Result",
+        "SuccessResult",
+        "Options",
+        "FailureResult",
+        "Issue",
+        "PathSegment",
+        "Types",
+        "InferInput",
+        "InferOutput",
+        "StandardJSONSchemaV1",
+        "Props",
+        "Converter",
+        "Target",
+        "Options",
+        "Types",
+        "InferInput",
+        "InferOutput",
+        "StandardSchemaWithJSONProps",
+        "StandardSchemaWithJSON"
+      ]
+    },
+    "zod/sv.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/ta.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/th.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/to-json-schema.ts": {
+      "verdict_source": [
+        "createToJSONSchemaMethod",
+        "createStandardJSONSchemaMethod"
+      ],
+      "detector_fp": [
+        "initializeContext",
+        "process",
+        "extractDefs",
+        "finalize"
+      ],
+      "not_findings": [
+        "Processor",
+        "JSONSchemaGeneratorParams",
+        "ToJSONSchemaParams",
+        "RegistryToJSONSchemaParams",
+        "ProcessParams",
+        "Seen",
+        "ToJSONSchemaContext",
+        "ZodStandardSchemaWithJSON",
+        "ZodStandardJSONSchemaPayload"
+      ]
+    },
+    "zod/tr.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/uk.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/ur.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/util.ts": {
+      "verdict_source": [
+        "assertEqual",
+        "assertNotEqual",
+        "assertIs",
+        "assertNever",
+        "assert",
+        "cached",
+        "cleanRegex",
+        "floatSafeRemainder",
+        "objectClone",
+        "assignProp",
+        "mergeDefs",
+        "cloneDef",
+        "getElementAtPath",
+        "promiseAllObject",
+        "randomString",
+        "esc",
+        "isObject",
+        "allowsEval",
+        "isPlainObject",
+        "numKeys",
+        "getParsedType",
+        "propertyKeyTypes",
+        "primitiveTypes",
+        "createTransparentProxy",
+        "optionalKeys",
+        "NUMBER_FORMAT_RANGES",
+        "BIGINT_FORMAT_RANGES",
+        "aborted",
+        "explicitlyAborted",
+        "prefixIssues",
+        "unwrapMessage",
+        "getSizableOrigin",
+        "getLengthableOrigin",
+        "cleanEnum",
+        "base64ToUint8Array",
+        "uint8ArrayToBase64",
+        "base64urlToUint8Array",
+        "uint8ArrayToBase64url",
+        "hexToUint8Array",
+        "uint8ArrayToHex"
+      ],
+      "detector_fp": [
+        "getEnumValues",
+        "joinValues",
+        "jsonStringifyReplacer",
+        "nullish",
+        "defineLazy",
+        "slugify",
+        "captureStackTrace",
+        "shallowClone",
+        "escapeRegex",
+        "clone",
+        "normalizeParams",
+        "stringifyPrimitive",
+        "pick",
+        "omit",
+        "extend",
+        "safeExtend",
+        "merge",
+        "partial",
+        "required",
+        "finalizeIssue",
+        "parsedType",
+        "issue"
+      ],
+      "not_findings": [
+        "JSONType",
+        "JWTAlgorithm",
+        "HashAlgorithm",
+        "HashEncoding",
+        "HashFormat",
+        "IPVersion",
+        "MimeTypes",
+        "ParsedTypes",
+        "AssertEqual",
+        "AssertNotEqual",
+        "AssertExtends",
+        "IsAny",
+        "Omit",
+        "OmitKeys",
+        "MakePartial",
+        "MakeRequired",
+        "Exactly",
+        "NoUndefined",
+        "Whatever",
+        "LoosePartial",
+        "Mask",
+        "Writeable",
+        "InexactPartial",
+        "EmptyObject",
+        "BuiltIn",
+        "MakeReadonly",
+        "SomeObject",
+        "Identity",
+        "Flatten",
+        "Mapped",
+        "Prettify",
+        "NoNeverKeys",
+        "NoNever",
+        "Extend",
+        "TupleItems",
+        "AnyFunc",
+        "IsProp",
+        "MaybeAsync",
+        "KeyOf",
+        "OmitIndexSignature",
+        "ExtractIndexSignature",
+        "Keys",
+        "SchemaClass",
+        "EnumValue",
+        "EnumLike",
+        "ToEnum",
+        "KeysEnum",
+        "KeysArray",
+        "Literal",
+        "LiteralArray",
+        "Primitive",
+        "PrimitiveArray",
+        "HasSize",
+        "HasLength",
+        "Numeric",
+        "SafeParseResult",
+        "SafeParseSuccess",
+        "SafeParseError",
+        "PropValues",
+        "PrimitiveSet",
+        "EmptyToNever",
+        "Normalize",
+        "CleanKey",
+        "ToCleanMap",
+        "FromCleanMap",
+        "Constructor"
+      ]
+    },
+    "zod/uz.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/vi.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/yo.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/zh-CN.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/zh-TW.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": []
+    },
+    "zod/zsf.ts": {
+      "verdict_source": [],
+      "detector_fp": [],
+      "not_findings": [
+        "$ZSF",
+        "$ZSFString",
+        "NumberTypes",
+        "$ZSFNumber",
+        "$ZSFBoolean",
+        "$ZSFNull",
+        "$ZSFUndefined",
+        "$ZSFOptional",
+        "$ZSFNever",
+        "$ZSFAny",
+        "$ZSFEnum",
+        "$ZSFArray",
+        "$ZSFObject",
+        "$ZSFLiteral",
+        "$ZSFUnion",
+        "$ZSFIntersection",
+        "$ZSFMap",
+        "$ZSFConditional"
+      ]
+    }
+  }
+}

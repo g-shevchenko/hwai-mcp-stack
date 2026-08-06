@@ -1,0 +1,737 @@
+{
+  "generated_at": "2026-08-06T10:44:59.947Z",
+  "grader": "v3",
+  "scope": "CD03 on v2a clean corpus, scored against blind-labeled source truth (EVALUATION.md §8)",
+  "supersedes": "grade-v2.mjs v2a 'any hit = FP' CD03 accounting",
+  "contract": {
+    "verdicts_only": "CD03 findings counted only when oracle-confirmed (confidence >= 0.85)",
+    "tp": "flag on verdict_source symbol",
+    "fp": "flag on detector_fp / not_findings / unlabeled symbol",
+    "fn": "verdict_source symbol not flagged",
+    "unlabeled_policy": "conservative FP (unknown treated as detector error)"
+  },
+  "truth_table": {
+    "file": "truth_table_v3.json",
+    "labeled_at": "2026-08-06",
+    "files": 100,
+    "labeled_symbols": 867,
+    "verdict_source_symbols": 171
+  },
+  "oracle_used": true,
+  "cd03_source_truth": {
+    "tp": 87,
+    "fp": 1,
+    "fn": 84,
+    "unlabeled_flagged": 1,
+    "precision": 0.9886363636363636,
+    "recall": 0.5087719298245614,
+    "f1": 0.6718146718146719,
+    "precision_ci": {
+      "lo": 0.9384035699273238,
+      "hi": 0.9979912663995695,
+      "p": 0.9886363636363636
+    },
+    "recall_ci": {
+      "lo": 0.4344757635071631,
+      "hi": 0.5826826244279736,
+      "p": 0.5087719298245614
+    }
+  },
+  "detail": {
+    "tp": [
+      {
+        "file": "zod/api.ts",
+        "symbol": "_slugify"
+      },
+      {
+        "file": "zod/api.ts",
+        "symbol": "_array"
+      },
+      {
+        "file": "zod/api.ts",
+        "symbol": "_union"
+      },
+      {
+        "file": "zod/api.ts",
+        "symbol": "_xor"
+      },
+      {
+        "file": "zod/api.ts",
+        "symbol": "_discriminatedUnion"
+      },
+      {
+        "file": "zod/api.ts",
+        "symbol": "_intersection"
+      },
+      {
+        "file": "zod/api.ts",
+        "symbol": "_record"
+      },
+      {
+        "file": "zod/api.ts",
+        "symbol": "_set"
+      },
+      {
+        "file": "zod/api.ts",
+        "symbol": "_nativeEnum"
+      },
+      {
+        "file": "zod/api.ts",
+        "symbol": "_transform"
+      },
+      {
+        "file": "zod/api.ts",
+        "symbol": "_optional"
+      },
+      {
+        "file": "zod/api.ts",
+        "symbol": "_nullable"
+      },
+      {
+        "file": "zod/api.ts",
+        "symbol": "_nonoptional"
+      },
+      {
+        "file": "zod/api.ts",
+        "symbol": "_success"
+      },
+      {
+        "file": "zod/api.ts",
+        "symbol": "_pipe"
+      },
+      {
+        "file": "zod/api.ts",
+        "symbol": "_readonly"
+      },
+      {
+        "file": "zod/api.ts",
+        "symbol": "_templateLiteral"
+      },
+      {
+        "file": "zod/api.ts",
+        "symbol": "_promise"
+      },
+      {
+        "file": "zod/compat.ts",
+        "symbol": "setErrorMap"
+      },
+      {
+        "file": "zod/compat.ts",
+        "symbol": "getErrorMap"
+      },
+      {
+        "file": "zod/compat.ts",
+        "symbol": "ZodFirstPartyTypeKind"
+      },
+      {
+        "file": "zod/core.ts",
+        "symbol": "$ZodEncodeError"
+      },
+      {
+        "file": "zod/parse.ts",
+        "symbol": "encodeAsync"
+      },
+      {
+        "file": "zod/parse.ts",
+        "symbol": "decodeAsync"
+      },
+      {
+        "file": "zod/parse.ts",
+        "symbol": "safeEncode"
+      },
+      {
+        "file": "zod/parse.ts",
+        "symbol": "safeDecode"
+      },
+      {
+        "file": "zod/parse.ts",
+        "symbol": "safeEncodeAsync"
+      },
+      {
+        "file": "zod/parse.ts",
+        "symbol": "safeDecodeAsync"
+      },
+      {
+        "file": "zod/regexes.ts",
+        "symbol": "extendedDuration"
+      },
+      {
+        "file": "zod/regexes.ts",
+        "symbol": "uuid4"
+      },
+      {
+        "file": "zod/regexes.ts",
+        "symbol": "uuid6"
+      },
+      {
+        "file": "zod/regexes.ts",
+        "symbol": "uuid7"
+      },
+      {
+        "file": "zod/regexes.ts",
+        "symbol": "md5_hex"
+      },
+      {
+        "file": "zod/regexes.ts",
+        "symbol": "md5_base64"
+      },
+      {
+        "file": "zod/regexes.ts",
+        "symbol": "md5_base64url"
+      },
+      {
+        "file": "zod/regexes.ts",
+        "symbol": "sha1_hex"
+      },
+      {
+        "file": "zod/regexes.ts",
+        "symbol": "sha1_base64"
+      },
+      {
+        "file": "zod/regexes.ts",
+        "symbol": "sha1_base64url"
+      },
+      {
+        "file": "zod/regexes.ts",
+        "symbol": "sha256_hex"
+      },
+      {
+        "file": "zod/regexes.ts",
+        "symbol": "sha256_base64"
+      },
+      {
+        "file": "zod/regexes.ts",
+        "symbol": "sha256_base64url"
+      },
+      {
+        "file": "zod/regexes.ts",
+        "symbol": "sha384_hex"
+      },
+      {
+        "file": "zod/regexes.ts",
+        "symbol": "sha384_base64"
+      },
+      {
+        "file": "zod/regexes.ts",
+        "symbol": "sha384_base64url"
+      },
+      {
+        "file": "zod/regexes.ts",
+        "symbol": "sha512_hex"
+      },
+      {
+        "file": "zod/regexes.ts",
+        "symbol": "sha512_base64"
+      },
+      {
+        "file": "zod/regexes.ts",
+        "symbol": "sha512_base64url"
+      },
+      {
+        "file": "zod/schemas.ts",
+        "symbol": "uuidv7"
+      },
+      {
+        "file": "zod/schemas.ts",
+        "symbol": "httpUrl"
+      },
+      {
+        "file": "zod/schemas.ts",
+        "symbol": "stringFormat"
+      },
+      {
+        "file": "zod/schemas.ts",
+        "symbol": "discriminatedUnion"
+      },
+      {
+        "file": "zod/schemas.ts",
+        "symbol": "partialRecord"
+      },
+      {
+        "file": "zod/schemas.ts",
+        "symbol": "nativeEnum"
+      },
+      {
+        "file": "zod/schemas.ts",
+        "symbol": "exactOptional"
+      },
+      {
+        "file": "zod/schemas.ts",
+        "symbol": "invertCodec"
+      },
+      {
+        "file": "zod/schemas.ts",
+        "symbol": "templateLiteral"
+      },
+      {
+        "file": "zod/to-json-schema.ts",
+        "symbol": "createToJSONSchemaMethod"
+      },
+      {
+        "file": "zod/util.ts",
+        "symbol": "assertEqual"
+      },
+      {
+        "file": "zod/util.ts",
+        "symbol": "assertNotEqual"
+      },
+      {
+        "file": "zod/util.ts",
+        "symbol": "assertIs"
+      },
+      {
+        "file": "zod/util.ts",
+        "symbol": "assertNever"
+      },
+      {
+        "file": "zod/util.ts",
+        "symbol": "assert"
+      },
+      {
+        "file": "zod/util.ts",
+        "symbol": "cleanRegex"
+      },
+      {
+        "file": "zod/util.ts",
+        "symbol": "floatSafeRemainder"
+      },
+      {
+        "file": "zod/util.ts",
+        "symbol": "objectClone"
+      },
+      {
+        "file": "zod/util.ts",
+        "symbol": "cloneDef"
+      },
+      {
+        "file": "zod/util.ts",
+        "symbol": "getElementAtPath"
+      },
+      {
+        "file": "zod/util.ts",
+        "symbol": "promiseAllObject"
+      },
+      {
+        "file": "zod/util.ts",
+        "symbol": "randomString"
+      },
+      {
+        "file": "zod/util.ts",
+        "symbol": "esc"
+      },
+      {
+        "file": "zod/util.ts",
+        "symbol": "allowsEval"
+      },
+      {
+        "file": "zod/util.ts",
+        "symbol": "numKeys"
+      },
+      {
+        "file": "zod/util.ts",
+        "symbol": "getParsedType"
+      },
+      {
+        "file": "zod/util.ts",
+        "symbol": "propertyKeyTypes"
+      },
+      {
+        "file": "zod/util.ts",
+        "symbol": "primitiveTypes"
+      },
+      {
+        "file": "zod/util.ts",
+        "symbol": "optionalKeys"
+      },
+      {
+        "file": "zod/util.ts",
+        "symbol": "NUMBER_FORMAT_RANGES"
+      },
+      {
+        "file": "zod/util.ts",
+        "symbol": "BIGINT_FORMAT_RANGES"
+      },
+      {
+        "file": "zod/util.ts",
+        "symbol": "explicitlyAborted"
+      },
+      {
+        "file": "zod/util.ts",
+        "symbol": "prefixIssues"
+      },
+      {
+        "file": "zod/util.ts",
+        "symbol": "getSizableOrigin"
+      },
+      {
+        "file": "zod/util.ts",
+        "symbol": "getLengthableOrigin"
+      },
+      {
+        "file": "zod/util.ts",
+        "symbol": "cleanEnum"
+      },
+      {
+        "file": "zod/util.ts",
+        "symbol": "base64urlToUint8Array"
+      },
+      {
+        "file": "zod/util.ts",
+        "symbol": "uint8ArrayToBase64url"
+      },
+      {
+        "file": "zod/util.ts",
+        "symbol": "hexToUint8Array"
+      },
+      {
+        "file": "zod/util.ts",
+        "symbol": "uint8ArrayToHex"
+      }
+    ],
+    "fp": [],
+    "fn": [
+      {
+        "file": "commander/command.js",
+        "symbol": "Command"
+      },
+      {
+        "file": "commander/command.js",
+        "symbol": "useColor"
+      },
+      {
+        "file": "hwai-repo-hygiene/module-depth.ts",
+        "symbol": "scoreModule"
+      },
+      {
+        "file": "hwai-repo-hygiene/module-depth.ts",
+        "symbol": "compareDepth"
+      },
+      {
+        "file": "zod/api.ts",
+        "symbol": "_tuple"
+      },
+      {
+        "file": "zod/api.ts",
+        "symbol": "_literal"
+      },
+      {
+        "file": "zod/api.ts",
+        "symbol": "_check"
+      },
+      {
+        "file": "zod/core.ts",
+        "symbol": "$ZodAsyncError"
+      },
+      {
+        "file": "zod/doc.ts",
+        "symbol": "Doc"
+      },
+      {
+        "file": "zod/errors.ts",
+        "symbol": "$ZodRealError"
+      },
+      {
+        "file": "zod/errors.ts",
+        "symbol": "toDotPath"
+      },
+      {
+        "file": "zod/from-json-schema.ts",
+        "symbol": "fromJSONSchema"
+      },
+      {
+        "file": "zod/json-schema-generator.ts",
+        "symbol": "JSONSchemaGenerator"
+      },
+      {
+        "file": "zod/json-schema-processors.ts",
+        "symbol": "stringProcessor"
+      },
+      {
+        "file": "zod/json-schema-processors.ts",
+        "symbol": "numberProcessor"
+      },
+      {
+        "file": "zod/json-schema-processors.ts",
+        "symbol": "booleanProcessor"
+      },
+      {
+        "file": "zod/json-schema-processors.ts",
+        "symbol": "bigintProcessor"
+      },
+      {
+        "file": "zod/json-schema-processors.ts",
+        "symbol": "symbolProcessor"
+      },
+      {
+        "file": "zod/json-schema-processors.ts",
+        "symbol": "nullProcessor"
+      },
+      {
+        "file": "zod/json-schema-processors.ts",
+        "symbol": "undefinedProcessor"
+      },
+      {
+        "file": "zod/json-schema-processors.ts",
+        "symbol": "voidProcessor"
+      },
+      {
+        "file": "zod/json-schema-processors.ts",
+        "symbol": "neverProcessor"
+      },
+      {
+        "file": "zod/json-schema-processors.ts",
+        "symbol": "anyProcessor"
+      },
+      {
+        "file": "zod/json-schema-processors.ts",
+        "symbol": "unknownProcessor"
+      },
+      {
+        "file": "zod/json-schema-processors.ts",
+        "symbol": "dateProcessor"
+      },
+      {
+        "file": "zod/json-schema-processors.ts",
+        "symbol": "enumProcessor"
+      },
+      {
+        "file": "zod/json-schema-processors.ts",
+        "symbol": "literalProcessor"
+      },
+      {
+        "file": "zod/json-schema-processors.ts",
+        "symbol": "nanProcessor"
+      },
+      {
+        "file": "zod/json-schema-processors.ts",
+        "symbol": "templateLiteralProcessor"
+      },
+      {
+        "file": "zod/json-schema-processors.ts",
+        "symbol": "fileProcessor"
+      },
+      {
+        "file": "zod/json-schema-processors.ts",
+        "symbol": "successProcessor"
+      },
+      {
+        "file": "zod/json-schema-processors.ts",
+        "symbol": "customProcessor"
+      },
+      {
+        "file": "zod/json-schema-processors.ts",
+        "symbol": "functionProcessor"
+      },
+      {
+        "file": "zod/json-schema-processors.ts",
+        "symbol": "transformProcessor"
+      },
+      {
+        "file": "zod/json-schema-processors.ts",
+        "symbol": "mapProcessor"
+      },
+      {
+        "file": "zod/json-schema-processors.ts",
+        "symbol": "setProcessor"
+      },
+      {
+        "file": "zod/json-schema-processors.ts",
+        "symbol": "arrayProcessor"
+      },
+      {
+        "file": "zod/json-schema-processors.ts",
+        "symbol": "objectProcessor"
+      },
+      {
+        "file": "zod/json-schema-processors.ts",
+        "symbol": "unionProcessor"
+      },
+      {
+        "file": "zod/json-schema-processors.ts",
+        "symbol": "intersectionProcessor"
+      },
+      {
+        "file": "zod/json-schema-processors.ts",
+        "symbol": "tupleProcessor"
+      },
+      {
+        "file": "zod/json-schema-processors.ts",
+        "symbol": "recordProcessor"
+      },
+      {
+        "file": "zod/json-schema-processors.ts",
+        "symbol": "nullableProcessor"
+      },
+      {
+        "file": "zod/json-schema-processors.ts",
+        "symbol": "nonoptionalProcessor"
+      },
+      {
+        "file": "zod/json-schema-processors.ts",
+        "symbol": "defaultProcessor"
+      },
+      {
+        "file": "zod/json-schema-processors.ts",
+        "symbol": "prefaultProcessor"
+      },
+      {
+        "file": "zod/json-schema-processors.ts",
+        "symbol": "catchProcessor"
+      },
+      {
+        "file": "zod/json-schema-processors.ts",
+        "symbol": "pipeProcessor"
+      },
+      {
+        "file": "zod/json-schema-processors.ts",
+        "symbol": "readonlyProcessor"
+      },
+      {
+        "file": "zod/json-schema-processors.ts",
+        "symbol": "promiseProcessor"
+      },
+      {
+        "file": "zod/json-schema-processors.ts",
+        "symbol": "optionalProcessor"
+      },
+      {
+        "file": "zod/json-schema-processors.ts",
+        "symbol": "lazyProcessor"
+      },
+      {
+        "file": "zod/parse.ts",
+        "symbol": "_parse"
+      },
+      {
+        "file": "zod/parse.ts",
+        "symbol": "_parseAsync"
+      },
+      {
+        "file": "zod/parse.ts",
+        "symbol": "_safeParse"
+      },
+      {
+        "file": "zod/parse.ts",
+        "symbol": "_safeParseAsync"
+      },
+      {
+        "file": "zod/parse.ts",
+        "symbol": "_encode"
+      },
+      {
+        "file": "zod/parse.ts",
+        "symbol": "_decode"
+      },
+      {
+        "file": "zod/parse.ts",
+        "symbol": "_encodeAsync"
+      },
+      {
+        "file": "zod/parse.ts",
+        "symbol": "_decodeAsync"
+      },
+      {
+        "file": "zod/parse.ts",
+        "symbol": "_safeEncode"
+      },
+      {
+        "file": "zod/parse.ts",
+        "symbol": "_safeDecode"
+      },
+      {
+        "file": "zod/parse.ts",
+        "symbol": "_safeEncodeAsync"
+      },
+      {
+        "file": "zod/parse.ts",
+        "symbol": "_safeDecodeAsync"
+      },
+      {
+        "file": "zod/regexes.ts",
+        "symbol": "integer"
+      },
+      {
+        "file": "zod/registries.ts",
+        "symbol": "$ZodRegistry"
+      },
+      {
+        "file": "zod/schemas.ts",
+        "symbol": "hash"
+      },
+      {
+        "file": "zod/schemas.ts",
+        "symbol": "strictObject"
+      },
+      {
+        "file": "zod/schemas.ts",
+        "symbol": "looseObject"
+      },
+      {
+        "file": "zod/schemas.ts",
+        "symbol": "refine"
+      },
+      {
+        "file": "zod/schemas.ts",
+        "symbol": "superRefine"
+      },
+      {
+        "file": "zod/schemas.ts",
+        "symbol": "stringbool"
+      },
+      {
+        "file": "zod/schemas.ts",
+        "symbol": "_function"
+      },
+      {
+        "file": "zod/to-json-schema.ts",
+        "symbol": "createStandardJSONSchemaMethod"
+      },
+      {
+        "file": "zod/util.ts",
+        "symbol": "cached"
+      },
+      {
+        "file": "zod/util.ts",
+        "symbol": "assignProp"
+      },
+      {
+        "file": "zod/util.ts",
+        "symbol": "mergeDefs"
+      },
+      {
+        "file": "zod/util.ts",
+        "symbol": "isObject"
+      },
+      {
+        "file": "zod/util.ts",
+        "symbol": "isPlainObject"
+      },
+      {
+        "file": "zod/util.ts",
+        "symbol": "createTransparentProxy"
+      },
+      {
+        "file": "zod/util.ts",
+        "symbol": "aborted"
+      },
+      {
+        "file": "zod/util.ts",
+        "symbol": "unwrapMessage"
+      },
+      {
+        "file": "zod/util.ts",
+        "symbol": "base64ToUint8Array"
+      },
+      {
+        "file": "zod/util.ts",
+        "symbol": "uint8ArrayToBase64"
+      }
+    ],
+    "unlabeled": [
+      {
+        "file": "zod/regexes.ts",
+        "symbol": "html5Email"
+      }
+    ]
+  }
+}
