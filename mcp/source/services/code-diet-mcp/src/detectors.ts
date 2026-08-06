@@ -23,6 +23,8 @@ export interface DetectorOptions {
   publicApiSources?: string[];
   // corpus entries + which indices are entry points, for 1-hop `export *` reachability (CD03).
   corpusEntry?: CorpusEntry;
+  // Named corpus files (path + text) for cross-file module resolution (CD04 chain).
+  corpusFiles?: CorpusFiles;
   // Language-graph oracle: when provided, CD03 confirms text-based candidates against
   // the graph's cross-file reference count (eval v2 §5c decision).
   languageGraphOracle?: LanguageGraphOracle;
@@ -53,6 +55,78 @@ export function detectReExportPlumbing(text: string): Finding[] {
       suggested_action: "Import from the concrete module directly; delete the barrel or give it a real responsibility.",
     },
   ];
+}
+
+// True when a source is itself a pure barrel (same test as detectReExportPlumbing).
+function isPureBarrelText(text: string): boolean {
+  const lines = text.split("\n").filter((l) => l.trim() && !l.trim().startsWith("//"));
+  if (lines.length === 0) return false;
+  const reExport = /^\s*export\s*(\{[^}]*\}|\*\s*(?:as\s+\w+)?)\s*from\s*["'][^"']+["']\s*;?\s*$/;
+  return lines.every((l) => reExport.test(l));
+}
+
+// CD04 — re-export CHAIN (spec §4: "chain of ≥2 pure re-exports"). A barrel that
+// re-exports from ANOTHER pure barrel is two hops of indirection with no added value.
+// Cross-file: the detector needs the corpus to know whether the re-export target is
+// itself a barrel. The head of the chain (the file passed in) is flagged once.
+export function detectReExportChain(text: string, selfFile: string, corpusFiles?: CorpusFiles): Finding[] {
+  if (!corpusFiles || corpusFiles.length === 0) return [];
+  if (!isPureBarrelText(text)) return []; // only a barrel can head a chain
+  const selfDir = selfFile.includes("/") ? selfFile.slice(0, selfFile.lastIndexOf("/")) : "";
+  const specRe = /\bexport\s*(?:\{[^}]*\}|\*\s*(?:as\s+\w+)?)\s*from\s*["']([^"']+)["']/g;
+  const visited = new Set<string>([selfFile]);
+  let m: RegExpExecArray | null;
+  while ((m = specRe.exec(text))) {
+    const target = resolveReExportTarget(selfDir, m[1], corpusFiles);
+    if (!target || visited.has(target.file)) continue;
+    visited.add(target.file);
+    if (isPureBarrelText(target.text)) {
+      return [
+        {
+          id: "CD04",
+          line: lineOf(text, m.index),
+          confidence: 0.7,
+          message: `Re-export chain: this barrel re-exports from another pure barrel (${target.file}) — 2+ hops of re-export plumbing with no added value.`,
+          suggested_action: "Re-export directly from the concrete module; collapse the intermediate barrel.",
+        },
+      ];
+    }
+  }
+  return [];
+}
+
+// Resolve a relative re-export specifier to a corpus file. Node-style: an ESM
+// `from "./x.js"` maps to the TS source `x.ts`; also handles extensionless and
+// `./dir/index.*` forms. Returns null when the target is outside the corpus.
+function resolveReExportTarget(selfDir: string, spec: string, corpusFiles: CorpusFiles): { file: string; text: string } | null {
+  if (!spec.startsWith(".")) return null; // package specifier, not a local module
+  const joined = normalizePath(selfDir ? `${selfDir}/${spec}` : spec);
+  const stem = joined.replace(/\.(mjs|js|ts)$/, "");
+  const candidates = [
+    joined,
+    `${stem}.ts`,
+    `${stem}.js`,
+    `${stem}.mjs`,
+    `${joined}.ts`,
+    `${joined}/index.ts`,
+    `${joined}/index.js`,
+  ];
+  for (const cand of candidates) {
+    const hit = corpusFiles.find((f) => f.file === cand);
+    if (hit) return hit;
+  }
+  return null;
+}
+
+function normalizePath(p: string): string {
+  const parts = p.split("/");
+  const out: string[] = [];
+  for (const part of parts) {
+    if (part === "" || part === ".") continue;
+    if (part === "..") out.pop();
+    else out.push(part);
+  }
+  return out.join("/");
 }
 
 // CD02 — guard-clause / fallback spam: a function body packed with defensive early returns.
@@ -170,6 +244,15 @@ export interface CorpusEntry {
   texts: string[];
   entryIdx: Set<number>;
 }
+
+// Named corpus files (path + text) for cross-file detectors that need to resolve
+// module specifiers (CD04 re-export chain). Optional; when absent, cross-file
+// path-resolution detectors are inert.
+export interface CorpusFile {
+  file: string;
+  text: string;
+}
+export type CorpusFiles = CorpusFile[];
 
 // Language-graph oracle: when provided, CD03 confirms its text-based candidates
 // against the graph's cross-file reference count (eval v2 §5c decision). Text-based
@@ -375,6 +458,7 @@ export async function analyzeSource(text: string, _path = "<input>", options: De
   const publicApiSources = options.publicApiSources || [];
   return [
     ...detectReExportPlumbing(text),
+    ...detectReExportChain(text, _path, options.corpusFiles),
     ...detectGuardSpam(text, thresholds.guard_spam_min),
     ...(await detectUnusedExports(text, allSources, publicApiSources, options.corpusEntry, options.languageGraphOracle, _path)),
     ...detectAbstractionBloat(text, allSources),

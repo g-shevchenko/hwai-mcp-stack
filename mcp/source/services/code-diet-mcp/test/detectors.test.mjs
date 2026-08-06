@@ -12,6 +12,39 @@ test("CD04 re-export plumbing: pure barrel file is flagged", async () => {
   assert.ok(cd04.length >= 1, "expected a CD04 barrel-file finding");
 });
 
+// CD04 extension (spec §4 CD04 row: "chain of ≥2 pure re-exports"). A barrel that
+// re-exports from ANOTHER barrel (which itself only re-exports) is a plumbing chain —
+// two hops of indirection with no added value. Cross-file: needs the corpus.
+test("CD04 re-export chain: barrel re-exporting from another pure barrel is flagged", async () => {
+  const leaf = `export function foo() { return 1; }\n`;
+  const midBarrel = `export { foo } from "./leaf.js";\n`; // pure barrel (1 hop)
+  const topBarrel = `export { foo } from "./mid.js";\n`; // re-exports the barrel -> chain of 2
+  const findings = await analyzeSource(topBarrel, "index.ts", {
+    allSources: [topBarrel, midBarrel, leaf],
+    corpusFiles: [
+      { file: "index.ts", text: topBarrel },
+      { file: "mid.ts", text: midBarrel },
+      { file: "leaf.ts", text: leaf },
+    ],
+  });
+  const cd04 = findings.filter((f) => f.id === "CD04" && /chain/i.test(f.message));
+  assert.ok(cd04.length >= 1, `expected a CD04 re-export-chain finding, got ${JSON.stringify(findings)}`);
+});
+
+test("CD04 re-export chain: barrel re-exporting from a REAL module (not a barrel) is NOT a chain", async () => {
+  const realModule = `export function foo() { return 1; }\nexport function bar() { return 2; }\n`;
+  const topBarrel = `export { foo } from "./real.js";\n`; // 1 hop only, leaf has real logic
+  const findings = await analyzeSource(topBarrel, "index.ts", {
+    allSources: [topBarrel, realModule],
+    corpusFiles: [
+      { file: "index.ts", text: topBarrel },
+      { file: "real.ts", text: realModule },
+    ],
+  });
+  const cd04chain = findings.filter((f) => f.id === "CD04" && /chain/i.test(f.message));
+  assert.equal(cd04chain.length, 0, `single-hop barrel into a real module is not a chain, got ${JSON.stringify(findings)}`);
+});
+
 test("CD02 guard-clause spam: function with many defensive guards is flagged", async () => {
   const guards = Array.from({ length: 7 }, (_, i) => `  if (!a${i}) return null;`).join("\n");
   const src = `export function f(a0,a1,a2,a3,a4,a5,a6) {\n${guards}\n  return a0;\n}\n`;

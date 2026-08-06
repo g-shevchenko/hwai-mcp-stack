@@ -473,3 +473,40 @@ node benchmarks/code-diet/grade-v3.mjs            # -> results/eval_v3_<date>.js
 
 `label_truth_table.mjs` is deterministic; `grade-v3.mjs` requires the built
 `dist/detectors.js` and the language-graph oracle (`scripts/oracle.mjs`).
+
+## 9. CD04 re-export-chain detector (2026-08-06) — spec-row completion, no-baseline-change
+
+The spec §4 CD04 row names **two** heuristics: "barrel file that only re-exports"
+(covered by `detectReExportPlumbing` since v2) **and** "chain of ≥2 pure re-exports".
+This iteration ships the second as `detectReExportChain` — a cross-file detector that
+flags a barrel whose re-export target is *itself* a pure barrel (2+ hops of indirection
+with no added value). This is a detector **addition after v2c blind labels exist**, so
+it is logged here per the contamination discipline.
+
+**Design (contracts first):** cross-file module resolution needs file *names*, not
+just texts — a new optional `CorpusFiles` (`{file, text}[]`) option on `analyzeSource`.
+The detector resolves relative re-export specifiers (`./x.js` → `x.ts`, extensionless,
+`./dir/index.*`) against the corpus and walks one hop; a cycle guard caps the walk.
+It is **opt-in**: when `corpusFiles` is absent the detector is inert, so the graded
+benchmark path (`grade-v2.mjs`, which passes texts only) is byte-for-byte unchanged.
+
+**TDD:** verify-red first — the positive chain test failed on assertion against the
+prior build; negative tests (single-hop into a real module, mixed-logic barrel,
+non-barrel) passed. Implementation to green: 22/22 unit tests pass.
+
+**Baseline measurement (`measure-before-deploy-prod-changes`):**
+- Graded corpus (`node grade-v2.mjs`): **unchanged** — v2b CD04 12 TP/0 FP/0 FN,
+  v2a clean FP-rate 0.100 with the identical 10 FP files (zod/index.ts CD04), v2c CD04
+  0/0/0. The new detector did not fire anywhere in the graded path (as designed).
+- Direct 5-case chain corpus (2 real chains, 3 non-chains), detector given `corpusFiles`:
+  TP=2, FP=0, FN=0 → **precision 1.00, recall 1.00** (n=5; a smoke measurement, not a
+  tuned floor — a larger blind chain corpus is a future extension, see todo #19).
+
+**Contamination statement:** the detector was added after v2c blind labels were frozen,
+but it is **inert on the graded corpora** (no `corpusFiles` in the grader), so no
+previously-reported number moves and no blind re-label is triggered. A chain-aware
+graded corpus extension would require a fresh blind label pass.
+
+**Reproducibility:** `node --test mcp/source/services/code-diet-mcp/test/detectors.test.mjs`
+(CD04 chain tests) + the inline 5-case measurement in this section.
+
