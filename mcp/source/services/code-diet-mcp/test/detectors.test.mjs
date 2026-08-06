@@ -5,34 +5,34 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { analyzeSource } from "../dist/detectors.js";
 
-test("CD04 re-export plumbing: pure barrel file is flagged", () => {
+test("CD04 re-export plumbing: pure barrel file is flagged", async () => {
   const src = `export { foo } from "./foo.js";\nexport { bar } from "./bar.js";\n`;
-  const findings = analyzeSource(src, "index.ts");
+  const findings = await analyzeSource(src, "index.ts");
   const cd04 = findings.filter((f) => f.id === "CD04");
   assert.ok(cd04.length >= 1, "expected a CD04 barrel-file finding");
 });
 
-test("CD02 guard-clause spam: function with many defensive guards is flagged", () => {
+test("CD02 guard-clause spam: function with many defensive guards is flagged", async () => {
   const guards = Array.from({ length: 7 }, (_, i) => `  if (!a${i}) return null;`).join("\n");
   const src = `export function f(a0,a1,a2,a3,a4,a5,a6) {\n${guards}\n  return a0;\n}\n`;
-  const findings = analyzeSource(src, "f.ts");
+  const findings = await analyzeSource(src, "f.ts");
   assert.ok(findings.some((f) => f.id === "CD02"), "expected a CD02 guard-spam finding");
 });
 
-test("CD03 unrequested export: exported symbol with zero references is flagged", () => {
+test("CD03 unrequested export: exported symbol with zero references is flagged", async () => {
   const src = `export function neverUsed() { return 1; }\n`;
-  const findings = analyzeSource(src, "u.ts", { allSources: [src] });
+  const findings = await analyzeSource(src, "u.ts", { allSources: [src] });
   assert.ok(findings.some((f) => f.id === "CD03"), "expected a CD03 unused-export finding");
 });
 
-test("clean referenced code yields no findings (false-positive floor)", () => {
+test("clean referenced code yields no findings (false-positive floor)", async () => {
   const lib = `export function add(a: number, b: number): number { return a + b; }\n`;
   const caller = `import { add } from "./lib.js";\nexport const total = add(1, 2);\n`;
-  const findings = analyzeSource(lib, "lib.ts", { allSources: [lib, caller] });
+  const findings = await analyzeSource(lib, "lib.ts", { allSources: [lib, caller] });
   assert.equal(findings.length, 0, `expected 0 findings, got ${JSON.stringify(findings)}`);
 });
 
-test("CD03 does NOT flag TS types/interfaces (compile-time, no runtime refs)", () => {
+test("CD03 does NOT flag TS types/interfaces (compile-time, no runtime refs)", async () => {
   // Types are compile-time only; a text-grep for runtime refs always misses them.
   // Flagging them is the Category-D false positive found in dogfooding.
   const src = [
@@ -40,44 +40,44 @@ test("CD03 does NOT flag TS types/interfaces (compile-time, no runtime refs)", (
     `export type OptimizationResult = { ok: boolean };`,
     `export interface TraceMetadata { id: string };`,
   ].join("\n");
-  const findings = analyzeSource(src, "types.ts", { allSources: [src] });
+  const findings = await analyzeSource(src, "types.ts", { allSources: [src] });
   const cd03 = findings.filter((f) => f.id === "CD03");
   assert.equal(cd03.length, 0, `expected 0 CD03 on type-only exports, got ${JSON.stringify(cd03)}`);
 });
 
-test("CD01 abstraction bloat: interface with exactly 1 impl and no polymorphic use is flagged", () => {
+test("CD01 abstraction bloat: interface with exactly 1 impl and no polymorphic use is flagged", async () => {
   const src = [
     `export interface Shape { area(): number }`,
     `class Square implements Shape { area() { return 1; } }`,
     `const s = new Square(); s.area();`,
   ].join("\n");
-  const findings = analyzeSource(src, "s.ts", { allSources: [src] });
+  const findings = await analyzeSource(src, "s.ts", { allSources: [src] });
   assert.ok(findings.some((f) => f.id === "CD01"), "expected a CD01 single-impl-interface finding");
 });
 
-test("CD01 clean: interface with 2+ implementations is NOT flagged", () => {
+test("CD01 clean: interface with 2+ implementations is NOT flagged", async () => {
   const src = [
     `interface Shape { area(): number }`,
     `class Square implements Shape { area() { return 1; } }`,
     `class Circle implements Shape { area() { return 2; } }`,
     `function render(x: Shape) { return x.area(); }`,
   ].join("\n");
-  const findings = analyzeSource(src, "s.ts", { allSources: [src] });
+  const findings = await analyzeSource(src, "s.ts", { allSources: [src] });
   assert.ok(!findings.some((f) => f.id === "CD01"), "expected no CD01 for polymorphic interface");
 });
 
-test("CD05 reinvention: helper duplicating stdlib padStart is flagged", () => {
+test("CD05 reinvention: helper duplicating stdlib padStart is flagged", async () => {
   const src = [
     `export function leftPad(s: string, n: number, ch: string): string {`,
     `  let out = s; while (out.length < n) out = ch + out; return out;`,
     `}`,
     `const x = leftPad("5", 3, "0");`,
   ].join("\n");
-  const findings = analyzeSource(src, "p.ts", { allSources: [src] });
+  const findings = await analyzeSource(src, "p.ts", { allSources: [src] });
   assert.ok(findings.some((f) => f.id === "CD05"), "expected a CD05 left-pad reinvention finding");
 });
 
-test("CD06 dead code: never-true condition is flagged", () => {
+test("CD06 dead code: never-true condition is flagged", async () => {
   const src = [
     `function f(x: number): number {`,
     `  if (x !== x) return -1;`,
@@ -85,12 +85,98 @@ test("CD06 dead code: never-true condition is flagged", () => {
     `}`,
     `f(1);`,
   ].join("\n");
-  const findings = analyzeSource(src, "d.ts", { allSources: [src] });
+  const findings = await analyzeSource(src, "d.ts", { allSources: [src] });
   assert.ok(findings.some((f) => f.id === "CD06"), "expected a CD06 never-true-condition finding");
 });
 
-test("CD06 dead code: if (false) constant branch is flagged", () => {
+test("CD06 dead code: if (false) constant branch is flagged", async () => {
   const src = `function g() {\n  if (false) { doThing(); }\n  return 1;\n}\ng();`;
-  const findings = analyzeSource(src, "d.ts", { allSources: [src] });
+  const findings = await analyzeSource(src, "d.ts", { allSources: [src] });
   assert.ok(findings.some((f) => f.id === "CD06"), "expected a CD06 if(false) finding");
+});
+
+// eval v2 §5b: library-code FP class. An export re-exported by a public entry-point
+// barrel is PUBLIC API, not dead. CD03 must NOT flag it.
+test("CD03 does NOT flag names re-exported by a public entry-point barrel", async () => {
+  const lib = `export function assertIs(x) {}\nexport function helper() { return 1; }\n`;
+  const barrel = `export { assertIs } from "./lib.js";\n`; // entry point
+  const findings = await analyzeSource(lib, "lib.ts", {
+    allSources: [lib, barrel],
+    publicApiSources: [barrel],
+  });
+  const cd03 = findings.filter((f) => f.id === "CD03" && f.message.includes("assertIs"));
+  assert.equal(cd03.length, 0, `public-API name must not be CD03, got ${JSON.stringify(cd03)}`);
+  // helper is NOT re-exported and unreferenced -> still flagged
+  const helperHit = findings.filter((f) => f.id === "CD03" && f.message.includes("helper"));
+  assert.ok(helperHit.length >= 1, "non-public unused export must still be flagged");
+});
+
+test("CD03 default-as-alias re-export (export { default as ar }) is public API", async () => {
+  const locale = `export default function ar() { return {}; }\n`;
+  const barrel = `export { default as ar } from "./ar.js";\n`;
+  const findings = await analyzeSource(locale, "ar.ts", {
+    allSources: [locale, barrel],
+    publicApiSources: [barrel],
+  });
+  const cd03 = findings.filter((f) => f.id === "CD03");
+  assert.equal(cd03.length, 0, `default-as-alias public API must not be CD03, got ${JSON.stringify(cd03)}`);
+});
+
+// eval v2 §5c: language-graph oracle. Text-based CD03 cannot resolve module
+// reachability (star-barrels, namespace imports, name collisions). The oracle
+// confirms or rejects each text-based candidate with the graph's cross-file
+// reference count. When the oracle reports a cross-file reference, CD03 must
+// NOT flag the symbol — the text-only FP class is eliminated.
+test("CD03 oracle: a text-candidate with a graph-confirmed cross-file ref is NOT flagged", async () => {
+  // `util` looks unused by text count (only its own declaration), but the oracle
+  // knows another file references `ns.util` via a namespace import.
+  const lib = `export function util() { return 1; }\n`;
+  const oracle = {
+    async hasCrossFileReference(symbolName, _selfFile) {
+      return symbolName === "util"; // graph: `import * as mod; mod.util()` elsewhere
+    },
+  };
+  const findings = await analyzeSource(lib, "lib.ts", {
+    allSources: [lib],
+    languageGraphOracle: oracle,
+  });
+  const cd03 = findings.filter((f) => f.id === "CD03");
+  assert.equal(cd03.length, 0, `oracle-confirmed ref must not be CD03, got ${JSON.stringify(cd03)}`);
+});
+
+test("CD03 oracle: a text-candidate with NO graph refs IS flagged (high confidence)", async () => {
+  const lib = `export function dead() { return 1; }\n`;
+  const oracle = {
+    async hasCrossFileReference(_symbolName, _selfFile) {
+      return false; // graph confirms zero cross-file refs
+    },
+  };
+  const findings = await analyzeSource(lib, "lib.ts", {
+    allSources: [lib],
+    languageGraphOracle: oracle,
+  });
+  const cd03 = findings.filter((f) => f.id === "CD03");
+  assert.ok(cd03.length >= 1, "oracle-confirmed dead export must be flagged");
+  assert.ok(cd03[0].confidence >= 0.8, `oracle-confirmed finding should have high confidence, got ${cd03[0].confidence}`);
+  assert.ok(
+    cd03[0].message.includes("language-graph"),
+    `oracle-confirmed finding should cite language-graph, got "${cd03[0].message}"`,
+  );
+});
+
+test("CD03 oracle: oracle failure degrades to text-candidate mode (conservative)", async () => {
+  const lib = `export function maybe() { return 1; }\n`;
+  const oracle = {
+    async hasCrossFileReference(_symbolName, _selfFile) {
+      throw new Error("graph unavailable");
+    },
+  };
+  // Must not throw; degrades to text-candidate with low confidence.
+  const findings = await analyzeSource(lib, "lib.ts", {
+    allSources: [lib],
+    languageGraphOracle: oracle,
+  });
+  const cd03 = findings.filter((f) => f.id === "CD03");
+  assert.ok(cd03.length >= 1, "oracle failure must still yield a candidate");
+  assert.ok(cd03[0].confidence <= 0.5, `degraded candidate should keep low confidence, got ${cd03[0].confidence}`);
 });

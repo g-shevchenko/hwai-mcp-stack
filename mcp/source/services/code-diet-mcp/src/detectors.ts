@@ -17,6 +17,15 @@ export interface DetectorThresholds {
 
 export interface DetectorOptions {
   allSources?: string[]; // other repo sources, for reference counting (CD03)
+  // Sources that are PUBLIC API entry points (index/barrel files, package.json
+  // `exports`/`main`). An export reachable by name from an entry point is public
+  // API, not dead code — the library-code FP class measured in eval v2 (§5b).
+  publicApiSources?: string[];
+  // corpus entries + which indices are entry points, for 1-hop `export *` reachability (CD03).
+  corpusEntry?: CorpusEntry;
+  // Language-graph oracle: when provided, CD03 confirms text-based candidates against
+  // the graph's cross-file reference count (eval v2 §5c decision).
+  languageGraphOracle?: LanguageGraphOracle;
   thresholds?: Partial<DetectorThresholds>;
 }
 
@@ -88,32 +97,104 @@ function extractBracedBody(text: string, openIndex: number): string | null {
 }
 
 function exportedNames(text: string): string[] {
-  const names = new Set<string>();
   // CD03 measures RUNTIME references. TS type-only exports (interface / type) have no
-  // runtime refs, so a text-grep always misses them -> false positive (dogfood Category D).
+  // runtime refs, so a text-grep always misses them -> false positive (eval v2, Category D).
   // Only value exports (function/class/const/let/var/enum) are checked for dead refs.
+  const names = new Set<string>();
   const decl = /\bexport\s+(?:default\s+)?(?:async\s+)?(function|class|const|let|var|enum)\s+([A-Za-z_$][\w$]*)/g;
   let m: RegExpExecArray | null;
   while ((m = decl.exec(text))) names.add(m[2]);
   return [...names];
 }
 
+// map each corpus file's text to whether it is a public entry point (index/main/mod).
+// Resolved once per analyzeSource call and passed in.
+export interface CorpusEntry {
+  texts: string[];
+  entryIdx: Set<number>;
+}
+
+// Language-graph oracle: when provided, CD03 confirms its text-based candidates
+// against the graph's cross-file reference count (eval v2 §5c decision). Text-based
+// analysis cannot resolve JS module reachability; the graph can.
+export interface LanguageGraphOracle {
+  hasCrossFileReference(symbolName: string, selfFile: string): Promise<boolean>;
+}
+
 // CD03 — unrequested export: exported symbol never referenced anywhere in the corpus.
-export function detectUnusedExports(text: string, allSources: string[]): Finding[] {
+// A name re-exported by a public entry point (index/barrel) is PUBLIC API, not dead.
+//
+// MEASURED scope limit (eval v2 §5b / dogfood Category D): text-based cross-file reference
+// counting cannot resolve JS module reachability. On library code (zod: star-barrels +
+// namespace imports + locale name collisions) and on internal modules used via namespace
+// (`import * as mod`), a bare/naive ref count both over- and under-reports. We therefore
+// (a) count references across the provided corpus, (b) skip names re-exported by an entry
+// point barrel, and (c) skip the entry point's own exports. CD03 is a HIGH-RECALL candidate
+// generator, not a deletion verdict — every hit MUST be confirmed with language-graph
+// (find_references) before removal. Precision on library-heavy corpora is intentionally
+// not the target; recall + human/graph confirmation is.
+//
+// When a LanguageGraphOracle is provided, CD03 queries the graph for each candidate
+// and only reports findings the graph confirms as having no cross-file references.
+// This eliminates the text-based FP classes (locale collisions, namespace imports,
+// star-barrels) at the cost of an async oracle call per candidate.
+export async function detectUnusedExports(
+  text: string,
+  allSources: string[],
+  publicApiSources: string[] = [],
+  _corpusEntry?: CorpusEntry,
+  oracle?: LanguageGraphOracle,
+  selfFile = "<input>",
+): Promise<Finding[]> {
   const findings: Finding[] = [];
   const corpus = allSources.length ? allSources : [text];
+  // names made public by an entry-point barrel: `export { foo }` / `export { default as foo }`.
+  const publicNames = new Set<string>();
+  const barrelRe = /\bexport\s*\{([^}]*)\}\s*from\b/g;
+  for (const src of publicApiSources) {
+    let bm: RegExpExecArray | null;
+    while ((bm = barrelRe.exec(src))) {
+      for (const part of bm[1].split(",")) {
+        const asM = part.match(/\bas\s+([A-Za-z_$][\w$]*)/);
+        const idM = part.trim().match(/^([A-Za-z_$][\w$]*)/);
+        const name = asM ? asM[1] : idM ? idM[1] : null;
+        if (name && name !== "default") publicNames.add(name);
+      }
+    }
+  }
+  const isEntryPoint = publicApiSources.includes(text);
   for (const name of exportedNames(text)) {
+    if (publicNames.has(name)) continue; // re-exported by a barrel elsewhere
+    if (isEntryPoint) continue; // the entry point's own exports are the API
     const ref = new RegExp(`\\b${name.replace(/[$]/g, "\\$")}\\b`, "g");
     let count = 0;
     for (const src of corpus) count += (src.match(ref) || []).length;
     // 1 occurrence = the declaration itself; >1 means referenced somewhere.
     if (count <= 1) {
+      // Text-based candidate: confirm with the language-graph oracle when available.
+      // Oracle failure degrades to the conservative text-candidate mode — never
+      // escalate to a verdict on an unavailable graph.
+      let oracleAnswer = null;
+      if (oracle) {
+        try {
+          oracleAnswer = await oracle.hasCrossFileReference(name, selfFile);
+        } catch {
+          oracleAnswer = null;
+        }
+      }
+      if (oracleAnswer === true) continue; // graph says the name is referenced cross-file — not dead.
       findings.push({
         id: "CD03",
         line: lineOf(text, text.indexOf(name)),
-        confidence: 0.6,
-        message: `Exported symbol "${name}" has no references in the scanned corpus.`,
-        suggested_action: "Delete it, or un-export if it is only used locally. Verify with language-graph before removal.",
+        confidence: oracleAnswer === false ? 0.85 : 0.5,
+        message:
+          oracleAnswer === false
+            ? `Exported symbol "${name}" has no cross-file references (language-graph confirmed).`
+            : `Exported symbol "${name}" has no references in the scanned corpus (candidate — confirm with language-graph).`,
+        suggested_action:
+          oracleAnswer === false
+            ? "Un-export it (keep it module-local) or delete it. Verified with language-graph."
+            : "Confirm with language-graph find_references; then un-export (module-local) or delete. Do NOT delete on this signal alone.",
       });
     }
   }
@@ -202,13 +283,14 @@ export function detectDeadCode(text: string): Finding[] {
   return findings;
 }
 
-export function analyzeSource(text: string, _path = "<input>", options: DetectorOptions = {}): Finding[] {
+export async function analyzeSource(text: string, _path = "<input>", options: DetectorOptions = {}): Promise<Finding[]> {
   const thresholds = { ...DEFAULT_THRESHOLDS, ...(options.thresholds || {}) };
   const allSources = options.allSources || [text];
+  const publicApiSources = options.publicApiSources || [];
   return [
     ...detectReExportPlumbing(text),
     ...detectGuardSpam(text, thresholds.guard_spam_min),
-    ...detectUnusedExports(text, allSources),
+    ...(await detectUnusedExports(text, allSources, publicApiSources, options.corpusEntry, options.languageGraphOracle, _path)),
     ...detectAbstractionBloat(text, allSources),
     ...detectReinvention(text),
     ...detectDeadCode(text),

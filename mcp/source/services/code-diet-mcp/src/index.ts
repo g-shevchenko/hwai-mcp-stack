@@ -4,9 +4,11 @@ import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { CallToolRequestSchema, ListToolsRequestSchema, Tool } from "@modelcontextprotocol/sdk/types.js";
 import { getCodeDietConfig } from "./config.js";
-import { analyzeSource, DetectorOptions } from "./detectors.js";
+import { analyzeSource, DetectorOptions, LanguageGraphOracle } from "./detectors.js";
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
+import path from "node:path";
+import fs from "node:fs/promises";
 
 const config = getCodeDietConfig();
 
@@ -91,10 +93,38 @@ const TOOLS: Tool[] = [
   },
 ];
 
-function asDetectorOptions(args: Record<string, unknown>): DetectorOptions {
+async function buildLanguageGraphOracle(repoRoot: string): Promise<LanguageGraphOracle | null> {
+  try {
+    const lgDistRoot = path.resolve(repoRoot, "../../language-graph-mcp/dist");
+    const configModule = await import(path.join(lgDistRoot, "config.js"));
+    const graphModule = await import(path.join(lgDistRoot, "graph.js"));
+    const textUtilsModule = await import(path.join(lgDistRoot, "text-utils.js"));
+    const lgConfig = configModule.getLanguageGraphConfig();
+    // Build (or load) the index for this repo root. auto_index=true creates it on first use.
+    await graphModule.buildLanguageGraphIndex(lgConfig, { repo_root: repoRoot, auto_index: true });
+    const indexFile = path.join(lgConfig.indexDir, `${textUtilsModule.stableHash(path.resolve(repoRoot))}.json`);
+    return {
+      async hasCrossFileReference(symbolName: string, selfFile: string): Promise<boolean> {
+        try {
+          const raw = await fs.readFile(indexFile, "utf8");
+          const index = JSON.parse(raw);
+          const refs = index.references.filter((r: { symbol: string; path: string }) => r.symbol === symbolName && r.path !== selfFile);
+          return refs.length > 0;
+        } catch {
+          return false; // on any failure, be conservative: do not confirm death
+        }
+      },
+    };
+  } catch {
+    return null; // language-graph not available -> text-only mode
+  }
+}
+
+function asDetectorOptions(args: Record<string, unknown>, oracle: LanguageGraphOracle | null): DetectorOptions {
   const thresholds = typeof args.thresholds === "object" && args.thresholds && !Array.isArray(args.thresholds) ? args.thresholds : undefined;
   return {
     thresholds: thresholds as DetectorOptions["thresholds"],
+    ...(oracle ? { languageGraphOracle: oracle } : {}),
   };
 }
 
@@ -134,7 +164,7 @@ function collectSourceFiles(root: string, maxFiles: number, maxBytes: number): {
   return out;
 }
 
-function runDetect(args: Record<string, unknown>) {
+async function runDetect(args: Record<string, unknown>) {
   const root = typeof args.repo_root === "string" ? args.repo_root : process.cwd();
   const maxFiles = typeof args.max_files === "number" ? args.max_files : config.maxFiles;
   const maxBytes = config.maxFileBytes;
@@ -148,32 +178,34 @@ function runDetect(args: Record<string, unknown>) {
       // skip missing
     }
   }
+  const oracle = await buildLanguageGraphOracle(root);
   const allTexts = files.map((f) => f.text);
   const findings = [];
   for (const f of files) {
-    const hits = analyzeSource(f.text, f.path, { ...asDetectorOptions(args), allSources: allTexts });
+    const hits = await analyzeSource(f.text, f.path, { ...asDetectorOptions(args, oracle), allSources: allTexts });
     for (const h of hits) findings.push({ ...h, file: relative(root, f.path) });
   }
-  return { findings: findings.slice(0, config.maxFindings), scanned_files: files.length, findings_count: findings.length };
+  return { findings: findings.slice(0, config.maxFindings), scanned_files: files.length, findings_count: findings.length, oracle_used: oracle !== null };
 }
 
-function runDeleteFirst(args: Record<string, unknown>) {
-  const result = runDetect(args);
+async function runDeleteFirst(args: Record<string, unknown>) {
+  const result = await runDetect(args);
   const candidates = result.findings.filter((f) => ["CD03", "CD04", "CD06"].includes(f.id));
   return {
     delete_candidates: candidates,
     delete_candidates_count: candidates.length,
     scanned_files: result.scanned_files,
+    oracle_used: result.oracle_used,
     behavior_preservation_note:
       "Candidates exclude test files. Verify each with language-graph blast-radius and run the test suite before removal.",
   };
 }
 
-function runReviewDiff(args: Record<string, unknown>) {
+async function runReviewDiff(args: Record<string, unknown>) {
   const diffText = typeof args.diff_text === "string" ? args.diff_text : "";
   if (!diffText.trim()) throw new Error("diff_text is required");
   const added = diffText.split("\n").filter((l) => l.startsWith("+") && !l.startsWith("+++")).map((l) => l.slice(1)).join("\n");
-  const findings = analyzeSource(added, "<diff>", asDetectorOptions(args));
+  const findings = await analyzeSource(added, "<diff>", asDetectorOptions(args, null));
   return {
     risk_score: Math.min(100, findings.length * 15),
     findings,
@@ -182,8 +214,8 @@ function runReviewDiff(args: Record<string, unknown>) {
   };
 }
 
-function runSimplificationPlan(args: Record<string, unknown>) {
-  const result = runDetect(args);
+async function runSimplificationPlan(args: Record<string, unknown>) {
+  const result = await runDetect(args);
   const items = result.findings.map((f, i) => ({
     order: i + 1,
     file: f.file,
@@ -193,7 +225,7 @@ function runSimplificationPlan(args: Record<string, unknown>) {
     risk: f.id === "CD03" ? "low" : "medium",
     behavior_preservation: "Run tests before/after; do not weaken assertions.",
   }));
-  return { plan_items: items, plan_items_count: items.length, scanned_files: result.scanned_files };
+  return { plan_items: items, plan_items_count: items.length, scanned_files: result.scanned_files, oracle_used: result.oracle_used };
 }
 
 function toolError(message: string) {
@@ -210,16 +242,16 @@ async function runTool(name: string, rawArgs: unknown) {
     let result: unknown;
     switch (name) {
       case "detect_ai_slop":
-        result = runDetect(args);
+        result = await runDetect(args);
         break;
       case "delete_first_report":
-        result = runDeleteFirst(args);
+        result = await runDeleteFirst(args);
         break;
       case "review_diff":
-        result = runReviewDiff(args);
+        result = await runReviewDiff(args);
         break;
       case "simplification_plan":
-        result = runSimplificationPlan(args);
+        result = await runSimplificationPlan(args);
         break;
       case "get_artifact":
         result = { note: "artifact store not implemented in v0.1 scaffold" };

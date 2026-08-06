@@ -256,8 +256,11 @@ function parseCodeFile(relativePath: string, lines: string[]): ParsedFile {
       addSymbol(symbols, relativePath, "tool", toolMatch[1], lineNumber);
     }
 
+    // TS generics: `function _string<T extends X>(` — allow an optional type-parameter
+    // list between the name and the argument list. A naive `\(` after the name skips
+    // every generic declaration (eval v2 §5c: zod/api.ts symbols missing from index).
     const functionMatch = trimmed.match(
-      /^(?:export\s+)?(?:default\s+)?(?:async\s+)?function\s+([A-Za-z_$][A-Za-z0-9_$]*)\s*\(/,
+      /^(?:export\s+)?(?:default\s+)?(?:async\s+)?function\s+([A-Za-z_$][A-Za-z0-9_$]*)\s*(?:<[^;{}]*>)?\s*\(/,
     );
     if (functionMatch) {
       addSymbol(symbols, relativePath, "function", functionMatch[1], lineNumber);
