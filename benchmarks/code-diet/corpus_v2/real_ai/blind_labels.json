@@ -1,0 +1,8 @@
+[
+  {
+    "file": "vision-mcp/src/artifact-store.ts",
+    "class": "CD03",
+    "line": 16,
+    "why": "Exported one-line passthrough `artifactDir(config)` (returns config.artifactDir) is never called by any other file in the corpus set (config.ts, diff-review-profiles.ts); the equivalent context-prep-mcp/src/artifact-store.ts has no such wrapper at all, since callers just read config.artifactDir directly."
+  }
+]
