@@ -14,6 +14,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = __dirname; // grade-v2.mjs lives at benchmarks/code-diet/
 const CLEAN = path.join(ROOT, "corpus_v2/clean");
 const INJECTED = path.join(ROOT, "corpus_v2/injected");
+const REAL_AI = path.join(ROOT, "corpus_v2/real_ai");
 const RESULTS = path.join(ROOT, "results");
 
 const CD = ["CD01", "CD02", "CD03", "CD04", "CD05", "CD06"];
@@ -97,6 +98,58 @@ for (const cls of CD) {
   };
 }
 
+// ---- v2c real_ai: blind-labeled, per-class precision/recall + Wilson CI ----
+// Blind labels come from an independent labeler with NO access to detectors/
+// expected keys (blind-validation-when-author-contaminated). A file absent
+// from blind_labels.json is treated as clean (no CD class present), same
+// default-to-CLEAN convention as v2b's gtByFile lookup above.
+const blindLabelsPath = path.join(REAL_AI, "blind_labels.json");
+const blindLabels = fs.existsSync(blindLabelsPath)
+  ? JSON.parse(fs.readFileSync(blindLabelsPath, "utf8"))
+  : [];
+const v2cByFile = new Map(); // file -> Set(class)
+for (const it of blindLabels) {
+  if (!v2cByFile.has(it.file)) v2cByFile.set(it.file, new Set());
+  v2cByFile.get(it.file).add(it.class);
+}
+
+const realAiFiles = [...walkFiles(REAL_AI)].filter(
+  (f) => f.rel !== "blind_labels.json" && f.rel !== "manifest.json"
+);
+const realAiTexts = realAiFiles.map((f) => fs.readFileSync(f.full, "utf8"));
+const realAiEntry = entryPointSources(realAiFiles);
+const realAiCorpusEntry = { texts: realAiTexts, entryIdx: entryPointIdx(realAiFiles) };
+const realAiOracle = await buildLanguageGraphOracle(REAL_AI);
+const realAiFindingsByFile = new Map();
+for (let i = 0; i < realAiFiles.length; i++) {
+  const hits = await analyzeSource(realAiTexts[i], realAiFiles[i].rel, { allSources: realAiTexts, publicApiSources: realAiEntry, corpusEntry: realAiCorpusEntry, ...(realAiOracle ? { languageGraphOracle: realAiOracle } : {}) });
+  realAiFindingsByFile.set(realAiFiles[i].rel, new Set(hits.map((h) => h.id)));
+}
+
+const perClassV2c = {};
+for (const cls of CD) {
+  let tp = 0, fn = 0, fp = 0;
+  for (const f of realAiFiles) {
+    const expected = v2cByFile.get(f.rel) || new Set(["CLEAN"]);
+    const found = realAiFindingsByFile.get(f.rel) || new Set();
+    const expHas = expected.has(cls);
+    const foundHas = found.has(cls);
+    if (expHas && foundHas) tp++;
+    else if (expHas && !foundHas) fn++;
+    else if (!expHas && foundHas && !expected.has("CLEAN")) fp++;
+    else if (!expHas && foundHas && expected.has("CLEAN")) fp++; // FP on control
+  }
+  const precision = tp + fp ? tp / (tp + fp) : 1;
+  const recall = tp + fn ? tp / (tp + fn) : 1;
+  const f1 = precision + recall ? (2 * precision * recall) / (precision + recall) : 0;
+  perClassV2c[cls] = {
+    tp, fp, fn,
+    precision, recall, f1,
+    precision_ci: wilson(tp, tp + fp),
+    recall_ci: wilson(tp, tp + fn),
+  };
+}
+
 // ---- v2a clean: FP rate ----
 const cleanFiles = [...walkFiles(CLEAN)].filter((f) => f.rel !== "manifest.json");
 const cleanTexts = cleanFiles.map((f) => fs.readFileSync(f.full, "utf8"));
@@ -119,13 +172,18 @@ const cleanFpCi = wilson(cleanWithFp, cleanFiles.length);
 const report = {
   generated_at: new Date().toISOString(),
   floors: FLOORS,
-  oracle_used: { v2b_injected: injOracle !== null, v2a_clean: cleanOracle !== null },
+  oracle_used: { v2b_injected: injOracle !== null, v2a_clean: cleanOracle !== null, v2c_real_ai: realAiOracle !== null },
   v2b: { files: injFiles.length, per_class: perClass },
   v2a: {
     files: cleanFiles.length,
     clean_fp_rate: cleanFpRate,
     clean_fp_ci: cleanFpCi,
     fp_files: cleanFpDetail,
+  },
+  v2c: {
+    files: realAiFiles.length,
+    blind_labeled_files: v2cByFile.size,
+    per_class: perClassV2c,
   },
 };
 const classPass = CD.every((c) => perClass[c].precision >= FLOORS.per_class_precision && perClass[c].recall >= FLOORS.per_class_recall);
@@ -156,5 +214,16 @@ if (cleanFpDetail.length) {
   for (const d of cleanFpDetail.slice(0, 15)) console.log(`  ${d.file}: ${d.ids.join(",")}`);
   if (cleanFpDetail.length > 15) console.log(`  ... +${cleanFpDetail.length - 15} more`);
 }
-console.log(`\nverdict: ${report.verdict}  (class_pass=${classPass} clean_pass=${cleanPass})`);
+console.log(`\n== v2c real_ai (blind-labeled, diagnostic only — not gated by pre-registered floors) ==`);
+console.log(`files=${realAiFiles.length}  blind_labeled_files=${v2cByFile.size}`);
+console.log("class   tp  fp  fn   P      R      F1     P-CI            R-CI");
+for (const c of CD) {
+  const r = perClassV2c[c];
+  const pci = `[${r.precision_ci.lo.toFixed(2)},${r.precision_ci.hi.toFixed(2)}]`;
+  const rci = `[${r.recall_ci.lo.toFixed(2)},${r.recall_ci.hi.toFixed(2)}]`;
+  console.log(
+    `${c}   ${String(r.tp).padStart(2)} ${String(r.fp).padStart(3)} ${String(r.fn).padStart(3)}  ${r.precision.toFixed(2)}   ${r.recall.toFixed(2)}   ${r.f1.toFixed(2)}   ${pci.padEnd(14)}  ${rci}`
+  );
+}
+console.log(`\nverdict: ${report.verdict}  (class_pass=${classPass} clean_pass=${cleanPass}; v2c is diagnostic and not part of this verdict per pre-registered floors §4)`);
 process.exit(report.verdict === "PASS" ? 0 : 1);

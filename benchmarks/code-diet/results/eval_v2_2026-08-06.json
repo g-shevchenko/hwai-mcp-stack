@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-06T07:36:30.322Z",
+  "generated_at": "2026-08-06T07:49:13.291Z",
   "floors": {
     "per_class_precision": 0.85,
     "per_class_recall": 0.8,
@@ -7,7 +7,8 @@
   },
   "oracle_used": {
     "v2b_injected": true,
-    "v2a_clean": true
+    "v2a_clean": true,
+    "v2c_real_ai": true
   },
   "v2b": {
     "files": 92,
@@ -275,6 +276,120 @@
         ]
       }
     ]
+  },
+  "v2c": {
+    "files": 30,
+    "blind_labeled_files": 1,
+    "per_class": {
+      "CD01": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1,
+        "recall": 1,
+        "f1": 1,
+        "precision_ci": {
+          "lo": 0,
+          "hi": 0,
+          "p": 0
+        },
+        "recall_ci": {
+          "lo": 0,
+          "hi": 0,
+          "p": 0
+        }
+      },
+      "CD02": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1,
+        "recall": 1,
+        "f1": 1,
+        "precision_ci": {
+          "lo": 0,
+          "hi": 0,
+          "p": 0
+        },
+        "recall_ci": {
+          "lo": 0,
+          "hi": 0,
+          "p": 0
+        }
+      },
+      "CD03": {
+        "tp": 0,
+        "fp": 13,
+        "fn": 1,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0,
+        "precision_ci": {
+          "lo": 0,
+          "hi": 0.22810184305529166,
+          "p": 0
+        },
+        "recall_ci": {
+          "lo": 0,
+          "hi": 0.7934567085261071,
+          "p": 0
+        }
+      },
+      "CD04": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1,
+        "recall": 1,
+        "f1": 1,
+        "precision_ci": {
+          "lo": 0,
+          "hi": 0,
+          "p": 0
+        },
+        "recall_ci": {
+          "lo": 0,
+          "hi": 0,
+          "p": 0
+        }
+      },
+      "CD05": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1,
+        "recall": 1,
+        "f1": 1,
+        "precision_ci": {
+          "lo": 0,
+          "hi": 0,
+          "p": 0
+        },
+        "recall_ci": {
+          "lo": 0,
+          "hi": 0,
+          "p": 0
+        }
+      },
+      "CD06": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1,
+        "recall": 1,
+        "f1": 1,
+        "precision_ci": {
+          "lo": 0,
+          "hi": 0,
+          "p": 0
+        },
+        "recall_ci": {
+          "lo": 0,
+          "hi": 0,
+          "p": 0
+        }
+      }
+    }
   },
   "verdict": "FAIL",
   "class_pass": false,
