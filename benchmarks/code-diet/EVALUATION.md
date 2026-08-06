@@ -510,3 +510,33 @@ graded corpus extension would require a fresh blind label pass.
 **Reproducibility:** `node --test mcp/source/services/code-diet-mcp/test/detectors.test.mjs`
 (CD04 chain tests) + the inline 5-case measurement in this section.
 
+## 10. Findings persistence — cross-run dead-code memory (2026-08-06, spec §2 runtime state)
+
+The spec §2 designates `$HOME/.hwai/code-diet-mcp/` as the runtime-state cache dir.
+This iteration implements the persistence half: a `FindingsStore`
+(`findings_store.ts`, pure/testable) that records which findings a scan surfaced to a
+local JSONL (`findings.jsonl`) and lets a later scan annotate **seen-before** (a
+still-unfixed dead export) vs **new**. This is the cross-run dead-code memory the
+delete-first workflow needs to distinguish "we told you about this last run and it is
+still there" from genuinely new slop.
+
+**Contract (code-free, aggregate-only):** a finding's stable key is
+`id::file::symbol` — it excludes line (a still-present finding shifts line as the file
+is edited) and NEVER stores the raw message/code. The JSONL record is
+`{key, id, file, line, run, ts}` only. A corrupt/missing store never throws; the scan
+starts empty. Persistence is opt-out via `CODE_DIET_PERSIST=0`; a store failure never
+fails the scan.
+
+**Service wiring:** `runDetect` annotates each finding with `seen_before` /
+`new_finding` and adds `new_findings_count` / `recurring_findings_count` to the
+result, then records the scan. Detectors stay pure — this is service-layer state, not
+a detector change, so no graded-corpus number moves and no blind re-label is needed.
+
+**TDD + e2e proof:** verify-red (module missing) → 5/5 store unit tests green;
+27/27 total. End-to-end through the stdio path against a shared cache dir: run 1
+surfaces `deadExport` as **new (1 new / 0 recurring)**; run 2 marks the identical
+finding **`seen_before: true` (0 new / 1 recurring)**.
+
+**Reproducibility:** `node --test mcp/source/services/code-diet-mcp/test/findings_store.test.mjs`.
+
+

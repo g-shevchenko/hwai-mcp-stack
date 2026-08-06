@@ -5,6 +5,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { CallToolRequestSchema, ListToolsRequestSchema, Tool } from "@modelcontextprotocol/sdk/types.js";
 import { getCodeDietConfig } from "./config.js";
 import { analyzeSource, DetectorOptions, LanguageGraphOracle } from "./detectors.js";
+import { FindingsStore, findingKey } from "./findings_store.js";
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 import path from "node:path";
@@ -206,12 +207,41 @@ async function runDetect(args: Record<string, unknown>) {
   }
   const oracle = await buildLanguageGraphOracle(root);
   const allTexts = files.map((f) => f.text);
+  // Cross-run dead-code memory (spec §2): annotate each finding with whether a prior
+  // scan already surfaced it (still-unfixed) vs new, then record this scan. The store
+  // is opt-out via CODE_DIET_PERSIST=0; failures never break the scan.
+  const persist = process.env.CODE_DIET_PERSIST !== "0";
+  const store = persist ? new FindingsStore(config.cacheDir) : null;
+  const priorKeys = store ? store.load() : new Set<string>();
+  const runId = new Date().toISOString();
   const findings = [];
   for (const f of files) {
     const hits = await analyzeSource(f.text, f.path, { ...asDetectorOptions(args, oracle), allSources: allTexts });
-    for (const h of hits) findings.push({ ...h, file: relative(root, f.path) });
+    for (const h of hits) {
+      const rel = relative(root, f.path);
+      const withFile = { ...h, file: rel };
+      const seenBefore = store ? priorKeys.has(findingKey(withFile)) : false;
+      findings.push({ ...withFile, seen_before: seenBefore, new_finding: !seenBefore });
+    }
   }
-  return { findings: findings.slice(0, config.maxFindings), scanned_files: files.length, findings_count: findings.length, oracle_used: oracle !== null };
+  if (store) {
+    try {
+      store.recordScan(findings, runId);
+    } catch {
+      // a persistence failure must never fail the scan
+    }
+  }
+  const newCount = findings.filter((f) => f.new_finding).length;
+  const recurringCount = findings.length - newCount;
+  return {
+    findings: findings.slice(0, config.maxFindings),
+    scanned_files: files.length,
+    findings_count: findings.length,
+    new_findings_count: newCount,
+    recurring_findings_count: recurringCount,
+    oracle_used: oracle !== null,
+    persistence: persist ? { enabled: true, store: "findings.jsonl", note: "seen_before=true means a prior scan already surfaced this finding (still unfixed)." } : { enabled: false },
+  };
 }
 
 async function runDeleteFirst(args: Record<string, unknown>) {
