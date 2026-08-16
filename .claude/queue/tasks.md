@@ -1,0 +1,36 @@
+# Claude Code task queue — code-diet scientific eval finish (night 2026-08-06)
+
+## Policy
+
+- Work one item at a time, in order. Stop on failure or uncertainty.
+- Stop on secrets, payments, production deploys, destructive actions, or unclear owner decisions.
+- NO public pushes: everything commits to the current branch `cursor/code-mcp-stack` (or a `code-diet/*` feature branch), never to a public repo. `g-shevchenko/mcp-token-savers` and any `hwai-code-savers` public scaffold are FORBIDDEN tonight — run `node scripts/validators/no_moat_leak.mjs` if a task touches public-bound material; Greg decides public release.
+- After each completed item, write evidence to `.claude/queue/evidence/`.
+- Mark an item done only after checks pass.
+- Repo root: /Users/user/Documents/GitHub/hwai-mcp-stack. Benchmark dir: benchmarks/code-diet.
+- Keep commits small: one task = one commit.
+
+## Context (state at queue creation)
+
+- Uncommitted work exists and belongs to task 1: language-graph oracle integration (detectors.ts, index.ts, detectors.test.mjs, language-graph-mcp graph.ts + package.json 0.1.2), EVALUATION.md, grade-v2.mjs, corpus_v2/, results/, scripts/, package.json+lock in benchmarks/code-diet.
+- EVALUATION.md §5d/§5e are the SSOT for what is already measured. Read it before any detector change.
+- Detector changes AFTER blind labels exist = contamination event; must be logged in EVALUATION.md and trigger fresh blind re-label. Avoid detector tuning entirely tonight except task 6 (pre-registered).
+- A previous blind-labeling attempt via a Cursor subagent FAILED TWICE with a provider error (invalid_request_error, moonshot schema). Do NOT retry that path. Task 2 does labeling via THIS claude queue (fresh claude -p invocation, no key access).
+
+## Tasks
+
+- [x] Task 1 — Commit the finished oracle + eval work. Run `cd benchmarks/code-diet && node grade-v2.mjs` (expect the §5d documented FAIL state: clean FP 0.100, CD03 precision 0.39 — that is the pre-registered boundary, not a regression) and `node --test mcp/source/services/code-diet-mcp/test/detectors.test.mjs` (expect pass). Then commit in two commits: (a) `language-graph-mcp@0.1.2 + code-diet CD03 language-graph oracle` for the 5 modified files; (b) `benchmarks/code-diet: eval v2 protocol, corpora v2a/v2b, grader v2, baselines` for the untracked benchmark files. Do NOT commit corpus_v2/real_ai/blind_labels.json if it appears (belongs to task 2). Write evidence with the grade-v2 verdict and test counts.
+
+- [x] Task 2 — Blind-label corpus v2c (30 real AI files) WITHOUT key access. You are the BLIND labeler: read benchmarks/code-diet/scripts/LABELING_SPEC.md and the 30 .ts files under benchmarks/code-diet/corpus_v2/real_ai/ ONLY. STRICTLY OFF-LIMITS: mcp/source/services/code-diet-mcp/ (all of it), grade-v2.mjs, EVALUATION.md, ground_truth.json, expected.json, results/. Label every file per the spec (CD01-CD06 or clean; for CD03 check references only within the 30 corpus files; index.ts barrels are public API, never CD03/CD04). Write benchmarks/code-diet/corpus_v2/real_ai/blind_labels.json as a JSON array [{file, class, line, why}]. Conservative: when unsure, do not flag. Commit ONLY blind_labels.json. Evidence: files reviewed, findings per class.
+
+- [x] Task 3 — Extend grader for v2c + full run. Update benchmarks/code-diet/grade-v2.mjs to also grade corpus_v2/real_ai against corpus_v2/real_ai/blind_labels.json (same per-class TP/FP/FN + Wilson CI logic as v2b; a file with no blind labels is clean; add `v2c` section to the report JSON and print table). Then run `node grade-v2.mjs` and capture the full output into benchmarks/code-diet/results/eval_v2_full_<date>.txt. Do NOT tune detectors to improve v2c numbers — if v2c precision is low, that is a RESULT to report. Commit grader + new results. Evidence: v2c per-class table pasted into the evidence file.
+
+- [x] Task 4 — RESULTS.md. Write benchmarks/code-diet/RESULTS.md synthesizing the measured state from EVALUATION.md §5b-§5e + results/eval_v2_*.json + results/baselines_*.json + the task-3 v2c numbers: per-class P/R/F1 with Wilson CI (v2b + v2c), clean FP rate (v2a), baselines overlap (RQ3), polarity guard applied to every comparative claim (if CI crosses zero, publish the bound not the direction), threats to validity, reproducibility commands. This is the measurement backbone of the future engineering note — numbers only, no marketing. Commit. Evidence: section list + any claim that had to be de-directionalized by the polarity guard.
+
+- [x] Task 5 — EVALUATION.md status flip + todo resolution. Update EVALUATION.md: mark §7 done-condition items that are now true (corpora built, v2c blind-labeled, baselines measured, grader v2 emits CI); add a short "v2c blind-label results" subsection (§5f) with the task-3 numbers and the contamination-log statement that no detector change was made after seeing blind labels. Commit. Evidence: diff summary.
+
+- [x] Task 6 — knowledge-rag fate decision (vision-mcp). Read mcp/source/services/vision-mcp/src/knowledge-rag.ts (marked TODO(unwired-feature)) and mcp/source/services/vision-mcp/src/index.ts. Decide: WIRE or REMOVE, using evidence: (a) was it ever wired in git history (git log -S findRelevantGotchas), (b) does the vision-mcp analysis pipeline have a natural insertion point, (c) cost of wiring vs value. Implement the SMALLER option: if wiring needs >100 lines of new plumbing, REMOVE the file + its tests instead and note the decision in the commit message. Either way: `node --test mcp/source/services/vision-mcp/test/*.mjs` must pass, stdio smoke (`echo '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' | node mcp/source/services/vision-mcp/dist/index.js` after build) must list tools. Commit with the decision rationale. Evidence: decision + why + test output.
+
+- [x] Task 7 — CD03 template-literal FP (pre-registered, dogfood regression gate). Reproduce first: find an existing benchmark/dogfood case where an `export` keyword inside a template literal (backtick string) produces a CD03 finding. If NO real case exists in corpus_v2 or prod dogfood data, mark this task done with evidence "not reproducible — no measured FP class" and do NOT change the detector (a fix without a failing case violates tdd-verify-red). If reproducible: add a verify-red unit test in mcp/source/services/code-diet-mcp/test/detectors.test.mjs (export name mentioned only inside a template literal must NOT count as a reference... and an export DECLARED inside a template literal string must not be flagged), watch it fail, implement the minimal fix in detectors.ts, watch it pass, re-run `node benchmarks/code-diet/grade-v2.mjs` and confirm clean FP rate did NOT regress above 0.100 + CI overlap. Log the change in EVALUATION.md §5c iteration table as iteration #5. Commit.
+
+- [x] Task 8 — Morning report. Write .claude/queue/evidence/00-morning-report.md summarizing: completed items, stopped item (if any) + reason, files changed, checks passed/failed, the v2c blind-label precision/recall headline numbers, and the next recommended human decision (public engineering note readiness vs gaps). Also update benchmarks/code-diet/EVALUATION.md title line from "Status: design" to "Status: measured" if tasks 2-5 all completed. Commit. This is the last task.

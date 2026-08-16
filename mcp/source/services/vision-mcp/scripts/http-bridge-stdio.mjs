@@ -7,11 +7,25 @@ import {
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 
-const DEFAULT_REMOTE_BASE_URL = "http://localhost:3393";
+const DEFAULT_REMOTE_BASE_URL = "http://172.245.72.102:3393";
 
 function parsePositiveInt(rawValue, fallback) {
   const parsed = Number(rawValue);
   return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+// Safety net: rewrite stale 127.0.0.1 artifact URLs in MCP responses to
+// the public base URL. The server cache may contain entries from before
+// VISION_MCP_PUBLIC_BASE_URL was set (incident 2026-08-13). This ensures
+// agents always get reachable artifact URLs regardless of cache state.
+function rewriteArtifactUrls(text, publicBase) {
+  if (!text || typeof text !== "string") return text;
+  const normalizedBase = publicBase.replace(/\/+$/, "");
+  // Replace http://127.0.0.1:3393/artifacts/ → <publicBase>/artifacts/
+  return text.replace(
+    /http:\/\/127\.0\.0\.1:3393\/artifacts\//g,
+    `${normalizedBase}/artifacts/`,
+  );
 }
 
 function buildRemoteUrls() {
@@ -195,7 +209,18 @@ function createBridgeServer() {
 
   server.setRequestHandler(CallToolRequestSchema, async (request) => {
     try {
-      return await remoteMcpRequest("tools/call", request.params);
+      const result = await remoteMcpRequest("tools/call", request.params);
+      // Safety net: rewrite stale 127.0.0.1 artifact URLs to the public
+      // base URL so agents on other machines (Devin, remote Codex, etc.)
+      // can actually fetch the prepared screenshot artifacts.
+      if (result?.content && Array.isArray(result.content)) {
+        for (const item of result.content) {
+          if (item.type === "text" && typeof item.text === "string") {
+            item.text = rewriteArtifactUrls(item.text, transportConfig.publicBase);
+          }
+        }
+      }
+      return result;
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       return {

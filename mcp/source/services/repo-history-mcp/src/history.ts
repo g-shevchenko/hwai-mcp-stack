@@ -609,6 +609,3 @@ export async function findCochangeFiles(config: RepoHistoryConfig, rawArgs: Reco
   return { ...payload, artifact_url: artifact.url, artifact_file: artifact.file };
 }
 
-export function safeArtifactName(raw: string): string {
-  return artifactFileName(raw);
-}

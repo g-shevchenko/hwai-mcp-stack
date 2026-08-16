@@ -1,0 +1,509 @@
+{
+  "generated_at": "2026-08-06T07:20:08.140Z",
+  "note": "baselines per package/slice scope; CD03/CD06 axis only; knip needs package.json, ts-prune needs tsconfig.json",
+  "scopes": {
+    "oss/commander.js": {
+      "knip": {
+        "available": true,
+        "count": 53,
+        "sample": [
+          {
+            "kind": "unused_file",
+            "file": "typings/index.test-d.ts"
+          },
+          {
+            "kind": "unused_file",
+            "file": "examples/action-this.js"
+          },
+          {
+            "kind": "unused_file",
+            "file": "examples/alias.cjs"
+          },
+          {
+            "kind": "unused_file",
+            "file": "examples/argument.js"
+          },
+          {
+            "kind": "unused_file",
+            "file": "examples/arguments-custom-processing.js"
+          },
+          {
+            "kind": "unused_file",
+            "file": "examples/arguments-extra.js"
+          },
+          {
+            "kind": "unused_file",
+            "file": "examples/color-help-replacement.mjs"
+          },
+          {
+            "kind": "unused_file",
+            "file": "examples/color-help.mjs"
+          },
+          {
+            "kind": "unused_file",
+            "file": "examples/configure-help.js"
+          },
+          {
+            "kind": "unused_file",
+            "file": "examples/configure-output.js"
+          }
+        ]
+      },
+      "ts_prune": {
+        "available": true,
+        "count": 0,
+        "sample": []
+      },
+      "eslint": {
+        "available": true,
+        "count": 7,
+        "sample": [
+          {
+            "kind": "@typescript-eslint/no-unused-vars",
+            "file": "corpus_v2/_oss/commander.js/tests/args.variadic.test.js",
+            "line": 36,
+            "message": "'cmd' is assigned a value but never used. Allowed unused vars must match /^_/u."
+          },
+          {
+            "kind": "@typescript-eslint/no-unused-vars",
+            "file": "corpus_v2/_oss/commander.js/tests/args.variadic.test.js",
+            "line": 47,
+            "message": "'cmd' is assigned a value but never used. Allowed unused vars must match /^_/u."
+          },
+          {
+            "kind": "@typescript-eslint/no-unused-vars",
+            "file": "corpus_v2/_oss/commander.js/tests/argument.variadic.test.js",
+            "line": 39,
+            "message": "'cmd' is assigned a value but never used. Allowed unused vars must match /^_/u."
+          },
+          {
+            "kind": "@typescript-eslint/no-unused-vars",
+            "file": "corpus_v2/_oss/commander.js/tests/argument.variadic.test.js",
+            "line": 50,
+            "message": "'cmd' is assigned a value but never used. Allowed unused vars must match /^_/u."
+          },
+          {
+            "kind": "@typescript-eslint/no-unused-vars",
+            "file": "corpus_v2/_oss/commander.js/tests/command.addHelpText.test.js",
+            "line": 105,
+            "message": "'writeSpy' is assigned a value but never used. Allowed unused vars must match /^_/u."
+          },
+          {
+            "kind": "@typescript-eslint/no-unused-vars",
+            "file": "corpus_v2/_oss/commander.js/tests/command.exitOverride.test.js",
+            "line": 228,
+            "message": "'stderrSpy' is assigned a value but never used. Allowed unused vars must match /^_/u."
+          },
+          {
+            "kind": "@typescript-eslint/no-unused-vars",
+            "file": "corpus_v2/_oss/commander.js/tests/negatives.test.js",
+            "line": 157,
+            "message": "'leafArgs' is assigned a value but never used. Allowed unused vars must match /^_/u."
+          }
+        ]
+      },
+      "code_diet": {
+        "count": 0,
+        "cd03_files": 0,
+        "cd06_files": 0
+      },
+      "overlap": {
+        "knip_tsprune_jaccard": 0,
+        "diet_cd03_vs_knip_filelevel_jaccard": 0,
+        "diet_cd03_cd06_vs_eslint_filelevel_jaccard": 0
+      }
+    },
+    "oss/express": {
+      "knip": {
+        "available": true,
+        "count": 73,
+        "sample": [
+          {
+            "kind": "unused_file",
+            "file": "examples/auth/index.js"
+          },
+          {
+            "kind": "unused_file",
+            "file": "examples/content-negotiation/db.js"
+          },
+          {
+            "kind": "unused_file",
+            "file": "examples/content-negotiation/index.js"
+          },
+          {
+            "kind": "unused_file",
+            "file": "examples/content-negotiation/users.js"
+          },
+          {
+            "kind": "unused_file",
+            "file": "examples/cookie-sessions/index.js"
+          },
+          {
+            "kind": "unused_file",
+            "file": "examples/cookies/index.js"
+          },
+          {
+            "kind": "unused_file",
+            "file": "examples/downloads/index.js"
+          },
+          {
+            "kind": "unused_file",
+            "file": "examples/ejs/index.js"
+          },
+          {
+            "kind": "unused_file",
+            "file": "examples/error/index.js"
+          },
+          {
+            "kind": "unused_file",
+            "file": "examples/error-pages/index.js"
+          }
+        ]
+      },
+      "ts_prune": {
+        "available": false,
+        "count": 0,
+        "error": "no tsconfig.json in scope",
+        "sample": []
+      },
+      "eslint": {
+        "available": true,
+        "count": 0,
+        "sample": []
+      },
+      "code_diet": {
+        "count": 1,
+        "cd03_files": 0,
+        "cd06_files": 0
+      },
+      "overlap": {
+        "knip_tsprune_jaccard": 0,
+        "diet_cd03_vs_knip_filelevel_jaccard": 0,
+        "diet_cd03_cd06_vs_eslint_filelevel_jaccard": 1
+      }
+    },
+    "oss/zod": {
+      "knip": {
+        "available": true,
+        "count": 272,
+        "sample": [
+          {
+            "kind": "unused_file",
+            "file": "play.ts"
+          },
+          {
+            "kind": "unused_file",
+            "file": "vitest.root.mjs"
+          },
+          {
+            "kind": "unused_file",
+            "file": ".configs/rollup.config.js"
+          },
+          {
+            "kind": "unused_file",
+            "file": "scripts/check-semver.ts"
+          },
+          {
+            "kind": "unused_file",
+            "file": "scripts/check-versions.ts"
+          },
+          {
+            "kind": "unused_file",
+            "file": "scripts/fail-on-console.ts"
+          },
+          {
+            "kind": "unused_file",
+            "file": "scripts/write-stub-package-jsons.ts"
+          },
+          {
+            "kind": "unused_file",
+            "file": "packages/integration/fixtures/ai-sdk/index.ts"
+          },
+          {
+            "kind": "unused_file",
+            "file": "packages/integration/fixtures/internal-types/cjs-test.cts"
+          },
+          {
+            "kind": "unused_file",
+            "file": "packages/integration/fixtures/internal-types/index.ts"
+          }
+        ]
+      },
+      "ts_prune": {
+        "available": true,
+        "count": 0,
+        "sample": []
+      },
+      "eslint": {
+        "available": true,
+        "count": 119,
+        "sample": [
+          {
+            "kind": "@typescript-eslint/no-unused-vars",
+            "file": "corpus_v2/_oss/zod/packages/treeshake/rollup.config.js",
+            "line": 5,
+            "message": "'bundleSize' is defined but never used. Allowed unused vars must match /^_/u."
+          },
+          {
+            "kind": "@typescript-eslint/no-unused-vars",
+            "file": "corpus_v2/_oss/zod/packages/zod/src/v3/tests/branded.test.ts",
+            "line": 29,
+            "message": "'numberSchema' is assigned a value but only used as a type. Allowed unused vars must match /^_/u."
+          },
+          {
+            "kind": "@typescript-eslint/no-unused-vars",
+            "file": "corpus_v2/_oss/zod/packages/zod/src/v3/tests/branded.test.ts",
+            "line": 36,
+            "message": "'symbolBrand' is assigned a value but only used as a type. Allowed unused vars must match /^_/u."
+          },
+          {
+            "kind": "@typescript-eslint/no-unused-vars",
+            "file": "corpus_v2/_oss/zod/packages/zod/src/v3/tests/branded.test.ts",
+            "line": 42,
+            "message": "'age' is assigned a value but only used as a type. Allowed unused vars must match /^_/u."
+          },
+          {
+            "kind": "@typescript-eslint/no-unused-vars",
+            "file": "corpus_v2/_oss/zod/packages/zod/src/v3/tests/catch.test.ts",
+            "line": 68,
+            "message": "'stringWithDefault' is assigned a value but only used as a type. Allowed unused vars must match /^_/u."
+          },
+          {
+            "kind": "@typescript-eslint/no-unused-vars",
+            "file": "corpus_v2/_oss/zod/packages/zod/src/v3/tests/catch.test.ts",
+            "line": 93,
+            "message": "'stringWithRemovedDefault' is assigned a value but only used as a type. Allowed unused vars must match /^_/u."
+          },
+          {
+            "kind": "@typescript-eslint/no-unused-vars",
+            "file": "corpus_v2/_oss/zod/packages/zod/src/v3/tests/default.test.ts",
+            "line": 41,
+            "message": "'stringWithDefault' is assigned a value but only used as a type. Allowed unused vars must match /^_/u."
+          },
+          {
+            "kind": "@typescript-eslint/no-unused-vars",
+            "file": "corpus_v2/_oss/zod/packages/zod/src/v3/tests/default.test.ts",
+            "line": 63,
+            "message": "'stringWithRemovedDefault' is assigned a value but only used as a type. Allowed unused vars must match /^_/u."
+          },
+          {
+            "kind": "@typescript-eslint/no-unused-vars",
+            "file": "corpus_v2/_oss/zod/packages/zod/src/v3/tests/enum.test.ts",
+            "line": 45,
+            "message": "'ItalianEnum' is assigned a value but only used as a type. Allowed unused vars must match /^_/u."
+          },
+          {
+            "kind": "@typescript-eslint/no-unused-vars",
+            "file": "corpus_v2/_oss/zod/packages/zod/src/v3/tests/enum.test.ts",
+            "line": 46,
+            "message": "'UnhealthyEnum' is assigned a value but only used as a type. Allowed unused vars must match /^_/u."
+          }
+        ]
+      },
+      "code_diet": {
+        "count": 159,
+        "cd03_files": 154,
+        "cd06_files": 0
+      },
+      "overlap": {
+        "knip_tsprune_jaccard": 0,
+        "diet_cd03_vs_knip_filelevel_jaccard": 0.0070921985815602835,
+        "diet_cd03_cd06_vs_eslint_filelevel_jaccard": 0
+      }
+    },
+    "clean/commander": {
+      "knip": {
+        "available": false,
+        "count": 0,
+        "error": "ERROR: Unable to find package.json\n",
+        "sample": []
+      },
+      "ts_prune": {
+        "available": false,
+        "count": 0,
+        "error": "no tsconfig.json in scope",
+        "sample": []
+      },
+      "eslint": {
+        "available": true,
+        "count": 0,
+        "sample": []
+      },
+      "code_diet": {
+        "count": 0,
+        "cd03_files": 0,
+        "cd06_files": 0
+      },
+      "overlap": {
+        "knip_tsprune_jaccard": 1,
+        "diet_cd03_vs_knip_filelevel_jaccard": 1,
+        "diet_cd03_cd06_vs_eslint_filelevel_jaccard": 1
+      }
+    },
+    "clean/express": {
+      "knip": {
+        "available": false,
+        "count": 0,
+        "error": "ERROR: Unable to find package.json\n",
+        "sample": []
+      },
+      "ts_prune": {
+        "available": false,
+        "count": 0,
+        "error": "no tsconfig.json in scope",
+        "sample": []
+      },
+      "eslint": {
+        "available": true,
+        "count": 0,
+        "sample": []
+      },
+      "code_diet": {
+        "count": 1,
+        "cd03_files": 0,
+        "cd06_files": 0
+      },
+      "overlap": {
+        "knip_tsprune_jaccard": 1,
+        "diet_cd03_vs_knip_filelevel_jaccard": 1,
+        "diet_cd03_cd06_vs_eslint_filelevel_jaccard": 1
+      }
+    },
+    "clean/hwai-language-graph": {
+      "knip": {
+        "available": false,
+        "count": 0,
+        "error": "ERROR: Unable to find package.json\n",
+        "sample": []
+      },
+      "ts_prune": {
+        "available": false,
+        "count": 0,
+        "error": "no tsconfig.json in scope",
+        "sample": []
+      },
+      "eslint": {
+        "available": true,
+        "count": 0,
+        "sample": []
+      },
+      "code_diet": {
+        "count": 0,
+        "cd03_files": 0,
+        "cd06_files": 0
+      },
+      "overlap": {
+        "knip_tsprune_jaccard": 1,
+        "diet_cd03_vs_knip_filelevel_jaccard": 1,
+        "diet_cd03_cd06_vs_eslint_filelevel_jaccard": 1
+      }
+    },
+    "clean/hwai-repo-hygiene": {
+      "knip": {
+        "available": false,
+        "count": 0,
+        "error": "ERROR: Unable to find package.json\n",
+        "sample": []
+      },
+      "ts_prune": {
+        "available": false,
+        "count": 0,
+        "error": "no tsconfig.json in scope",
+        "sample": []
+      },
+      "eslint": {
+        "available": true,
+        "count": 0,
+        "sample": []
+      },
+      "code_diet": {
+        "count": 0,
+        "cd03_files": 0,
+        "cd06_files": 0
+      },
+      "overlap": {
+        "knip_tsprune_jaccard": 1,
+        "diet_cd03_vs_knip_filelevel_jaccard": 1,
+        "diet_cd03_cd06_vs_eslint_filelevel_jaccard": 1
+      }
+    },
+    "clean/zod": {
+      "knip": {
+        "available": false,
+        "count": 0,
+        "error": "ERROR: Unable to find package.json\n",
+        "sample": []
+      },
+      "ts_prune": {
+        "available": false,
+        "count": 0,
+        "error": "no tsconfig.json in scope",
+        "sample": []
+      },
+      "eslint": {
+        "available": true,
+        "count": 1,
+        "sample": [
+          {
+            "kind": "@typescript-eslint/no-unused-vars",
+            "file": "corpus_v2/clean/zod/schemas.ts",
+            "line": 1817,
+            "message": "'Class' is defined but only used as a type. Allowed unused vars must match /^_/u."
+          }
+        ]
+      },
+      "code_diet": {
+        "count": 99,
+        "cd03_files": 98,
+        "cd06_files": 0
+      },
+      "overlap": {
+        "knip_tsprune_jaccard": 1,
+        "diet_cd03_vs_knip_filelevel_jaccard": 0,
+        "diet_cd03_cd06_vs_eslint_filelevel_jaccard": 0.1
+      }
+    },
+    "real_ai": {
+      "knip": {
+        "available": false,
+        "count": 0,
+        "error": "ERROR: Unable to find package.json\n",
+        "sample": []
+      },
+      "ts_prune": {
+        "available": false,
+        "count": 0,
+        "error": "no tsconfig.json in scope",
+        "sample": []
+      },
+      "eslint": {
+        "available": true,
+        "count": 2,
+        "sample": [
+          {
+            "kind": "@typescript-eslint/no-unused-vars",
+            "file": "corpus_v2/real_ai/contract-schema-mcp/src/contracts.ts",
+            "line": 79,
+            "message": "'CONTRACT_EXTENSIONS' is assigned a value but never used. Allowed unused vars must match /^_/u."
+          },
+          {
+            "kind": "@typescript-eslint/no-unused-vars",
+            "file": "corpus_v2/real_ai/docs-sync-mcp/src/docs-sync.ts",
+            "line": 198,
+            "message": "'root' is assigned a value but never used. Allowed unused vars must match /^_/u."
+          }
+        ]
+      },
+      "code_diet": {
+        "count": 39,
+        "cd03_files": 39,
+        "cd06_files": 0
+      },
+      "overlap": {
+        "knip_tsprune_jaccard": 1,
+        "diet_cd03_vs_knip_filelevel_jaccard": 0,
+        "diet_cd03_cd06_vs_eslint_filelevel_jaccard": 0.07142857142857142
+      }
+    }
+  }
+}

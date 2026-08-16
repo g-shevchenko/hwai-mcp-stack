@@ -1,0 +1,125 @@
+{
+  "built_at": "2026-08-06T07:04:26.188Z",
+  "files": [
+    {
+      "file": "repo-quality-gate-mcp/src/config.ts",
+      "bytes": 2890
+    },
+    {
+      "file": "language-graph-mcp/src/graph.ts",
+      "bytes": 30881
+    },
+    {
+      "file": "repo-history-mcp/src/measurement.ts",
+      "bytes": 5882
+    },
+    {
+      "file": "playwright-trace-mcp/src/index.ts",
+      "bytes": 13159
+    },
+    {
+      "file": "retrieval-mcp/src/index.ts",
+      "bytes": 32343
+    },
+    {
+      "file": "pbt-runner-mcp/src/index.ts",
+      "bytes": 23474
+    },
+    {
+      "file": "agent-trace-mcp/src/trace.ts",
+      "bytes": 15708
+    },
+    {
+      "file": "contract-schema-mcp/src/contracts.ts",
+      "bytes": 29203
+    },
+    {
+      "file": "context-prep-mcp/src/artifact-store.ts",
+      "bytes": 2339
+    },
+    {
+      "file": "golden-dataset-mcp/src/index.ts",
+      "bytes": 17605
+    },
+    {
+      "file": "agent-trace-mcp/src/measurement.ts",
+      "bytes": 4434
+    },
+    {
+      "file": "docs-sync-mcp/src/docs-sync.ts",
+      "bytes": 18565
+    },
+    {
+      "file": "vision-mcp/src/artifact-store.ts",
+      "bytes": 2053
+    },
+    {
+      "file": "router-lite-mcp/src/router.ts",
+      "bytes": 11114
+    },
+    {
+      "file": "repo-history-mcp/src/index.ts",
+      "bytes": 13197
+    },
+    {
+      "file": "retrieval-mcp/src/config.ts",
+      "bytes": 2923
+    },
+    {
+      "file": "context-prep-mcp/src/scraper-core-client.ts",
+      "bytes": 3503
+    },
+    {
+      "file": "playwright-trace-mcp/src/parsers.ts",
+      "bytes": 28832
+    },
+    {
+      "file": "golden-dataset-mcp/src/dataset-store.ts",
+      "bytes": 29377
+    },
+    {
+      "file": "vision-mcp/src/diff-review-profiles.ts",
+      "bytes": 2418
+    },
+    {
+      "file": "context-prep-mcp/src/prep-url.ts",
+      "bytes": 24334
+    },
+    {
+      "file": "retrieval-mcp/src/path-policy.ts",
+      "bytes": 6087
+    },
+    {
+      "file": "context-prep-mcp/src/url-policy.ts",
+      "bytes": 2032
+    },
+    {
+      "file": "language-graph-mcp/src/config.ts",
+      "bytes": 2068
+    },
+    {
+      "file": "dependency-risk-mcp/src/index.ts",
+      "bytes": 17037
+    },
+    {
+      "file": "vision-mcp/src/config.ts",
+      "bytes": 3229
+    },
+    {
+      "file": "repo-history-mcp/src/config.ts",
+      "bytes": 2046
+    },
+    {
+      "file": "docs-sync-mcp/src/index.ts",
+      "bytes": 11242
+    },
+    {
+      "file": "repo-history-mcp/src/git-utils.ts",
+      "bytes": 4969
+    },
+    {
+      "file": "context-prep-mcp/src/prep-logs.ts",
+      "bytes": 7474
+    }
+  ]
+}
