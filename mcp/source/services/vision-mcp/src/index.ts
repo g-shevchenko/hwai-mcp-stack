@@ -29,6 +29,7 @@ import { listScreenshotTaskIntentNames } from "./screenshot-task-intents.js";
 import { assertAllowedImageUrl } from "./url-policy.js";
 import { readArtifact } from "./artifact-store.js";
 import { appendRequestLog } from "./request-log.js";
+import { analyzeImageWithVlmGateway } from "./vlm-gateway-analyzer.js";
 
 const config = getVisionConfig();
 const USER_AGENT = "HWAI-Vision-MCP/3.0";
@@ -347,10 +348,11 @@ const PREPARE_SCREENSHOT_DIFF_TOOL: Tool = {
 const IMAGE_TO_TEXT_TOOL: Tool = {
   name: "image_url_to_text",
   description:
-    "Fetches an image from URL and provides a structured text representation. " +
-    "Useful for screenshots with annotations, task lists, or UI mockups. " +
-    "Returns description of visual elements, text content, and annotated tasks. " +
-    "NOTE: For screenshot prep and artifact generation, prefer 'analyze_screenshot' tool.",
+    "Fetches an image from URL and returns a TEXT analysis via the VLM gateway (gemini-2.5-flash). " +
+    "Designed for non-vision-capable models (e.g. GLM-5.2) that need a text description of an image. " +
+    "The VLM gateway analyzes the image and returns a structured text report covering layout, text content, " +
+    "visual issues, and a verdict on professional appearance. " +
+    "For screenshot prep with annotation crops and artifact URLs, prefer 'analyze_screenshot' tool.",
   inputSchema: {
     type: "object",
     properties: {
@@ -360,7 +362,7 @@ const IMAGE_TO_TEXT_TOOL: Tool = {
       },
       context: {
         type: "string",
-        description: "Optional context about what to look for (e.g., 'task annotations', 'UI elements')",
+        description: "Optional context about what to look for (e.g., 'task annotations', 'UI elements', 'check letter formatting')",
         default: "general analysis",
       },
     },
@@ -1127,6 +1129,31 @@ function createVisionServer(): Server {
           return { parsed: parsedUrl, image: fetchedImage };
         });
 
+        // Try VLM gateway analysis first (returns text for non-vision models)
+        // Send the original URL directly — the gateway fetches it itself,
+        // avoiding base64 encoding issues through the MCP bridge.
+        const vlmResult = await analyzeImageWithVlmGateway(parsed.toString(), { context });
+
+        if (vlmResult.ok && vlmResult.text) {
+          // Success: return text analysis from VLM gateway
+          return {
+            content: [
+              {
+                type: "text",
+                text:
+                  `Image analyzed via VLM gateway (model: ${vlmResult.modelUsed})\n` +
+                  `Source: ${parsed.toString()}\n` +
+                  `Processing time: ${vlmResult.processingTimeMs}ms\n\n` +
+                  `--- VLM Analysis ---\n${vlmResult.text}`,
+              },
+            ],
+          };
+        }
+
+        // Fallback: return image + prompt scaffold (original behavior)
+        // This path is for when VLM gateway is not configured or all models failed
+        console.error(`[image_url_to_text] VLM gateway failed: ${vlmResult.error}, falling back to image return`);
+
         return {
           content: [
             {
@@ -1139,6 +1166,8 @@ function createVisionServer(): Server {
               text:
                 `Screenshot/image loaded from: ${parsed.toString()}\n\n` +
                 `Context: ${context}\n\n` +
+                `Note: VLM gateway analysis failed (${vlmResult.error}). ` +
+                `Falling back to image return for vision-capable models.\n\n` +
                 `Please analyze this image and identify:\n` +
                 `1. Any numbered tasks or annotations\n` +
                 `2. UI elements, buttons, or forms shown\n` +
